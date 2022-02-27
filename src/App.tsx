@@ -1,17 +1,22 @@
 import { useState } from "react";
-import logo from "./logo.svg";
-import "./App.css";
+
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
+import Routes from "./routes/index.jsx";
+import { CssBaseline, StyledEngineProvider } from "@mui/material";
+
+// import NavigationScroll from "@components/NavigationScroll";
+import NavigationScroll from "./components/NavigationScroll";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello World 2</p>
-      </header>
-    </div>
+    <>
+      <NavigationScroll>
+        <Routes />
+      </NavigationScroll>
+    </>
   );
 }
 
