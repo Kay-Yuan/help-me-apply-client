@@ -3,13 +3,7 @@ import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 
 import { NavItem as Link } from "@components";
-import {
-  Box,
-  InputBase,
-  SpeedDial,
-  SpeedDialAction,
-  SpeedDialIcon,
-} from "@mui/material";
+import { Box, InputBase, SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 // import {
 //   SaveIcon,
 //   FileCopyIcon,
@@ -73,27 +67,35 @@ const actions = [
   { icon: <PrintIcon />, name: "Print" },
   { icon: <ShareIcon />, name: "Share" },
 ];
+
 const Search = styled.div`
   position: relative;
   border-radius: 2;
-  background-color: white;
-  margin-left: calc(${sideBarWidth} + 20px);
+  background-color: #e9dfdf;
+  margin-left: ${sideBarWidth};
   margin-top: 25px;
-  width: 10%;
+  width: 220px;
+
+  &:hover {
+    background-color: #f9efef;
+    transition: 0.4s;
+  }
 `;
 
 const SearchIconWrapper = styled.div`
   /* padding: theme.spacing(0, 2); */
   height: 100%;
   position: absolute;
-  pointerevents: none;
+  pointer-events: none;
   display: flex;
-  alignitems: center;
-  justifycontent: center;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px 0 10px;
 `;
 
 const StyledInputBase = styled(InputBase)`
   color: inherit;
+  margin-left: 40px;
 `;
 
 function AppLayout() {
@@ -104,10 +106,7 @@ function AppLayout() {
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
-          <StyledInputBase
-            placeholder="Search…"
-            inputProps={{ "aria-label": "search" }}
-          />
+          <StyledInputBase placeholder="Search…" inputProps={{ "aria-label": "search" }} />
         </Search>
       </TopNav>
 
@@ -132,7 +131,7 @@ function AppLayout() {
         <Outlet />
         <Box
           sx={{
-            height: "90vh",
+            height: "85vh",
             transform: "translateZ(0px)",
             flexGrow: 1,
           }}
@@ -143,11 +142,7 @@ function AppLayout() {
             icon={<SpeedDialIcon />}
           >
             {actions.map((action) => (
-              <SpeedDialAction
-                key={action.name}
-                icon={action.icon}
-                tooltipTitle={action.name}
-              />
+              <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} />
             ))}
           </SpeedDial>
         </Box>
