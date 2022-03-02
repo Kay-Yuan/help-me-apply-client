@@ -1,17 +1,11 @@
-import { useState } from "react";
-import logo from "./logo.svg";
-import "./App.css";
+import { BrowserRouter } from "react-router-dom";
+import Routes from "./routes/index.jsx";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello World 2</p>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes />
+    </BrowserRouter>
   );
 }
 
