@@ -3,8 +3,29 @@ import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 
 import { NavItem as Link } from "@components";
+import {
+  Box,
+  InputBase,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
+} from "@mui/material";
+// import {
+//   SaveIcon,
+//   FileCopyIcon,
+//   ShareIcon,
+//   PrintIcon,
+//   EditIcon,
+// } from "@mui/icons-material";
+import FileCopyIcon from "@mui/icons-material/FileCopyOutlined";
+import SaveIcon from "@mui/icons-material/Save";
+import PrintIcon from "@mui/icons-material/Print";
+import ShareIcon from "@mui/icons-material/Share";
+import SearchIcon from "@mui/icons-material/Search";
 
 const topNavHeight = "85px";
+const rightMargin = "20px";
+const sideBarWidth = "260px";
 
 const TopNav = styled.div`
   height: 85px;
@@ -21,7 +42,7 @@ const TopNav = styled.div`
 
 const SideNav = styled.div`
   height: calc(100vh - ${topNavHeight});
-  width: 260px; /* Set the width of the sidebar */
+  width: ${sideBarWidth}; /* Set the width of the sidebar */
   position: fixed; /* Fixed Sidebar (stay in place on scroll) */
   z-index: 1; /* Stay on top */
   top: ${topNavHeight}; /* Stay at the top */
@@ -40,16 +61,55 @@ const MainArea = styled.div`
   /* position: fixed; */
   /* z-index: 1; */
   margin-top: ${topNavHeight};
-  margin-left: 260px;
+  margin-left: ${sideBarWidth};
 
-  width: calc(100% - 260px - 20px);
+  width: calc(100% - ${sideBarWidth} - ${rightMargin});
   border-radius: 12px 12px 0px 0px;
+`;
+
+const actions = [
+  { icon: <FileCopyIcon />, name: "Copy" },
+  { icon: <SaveIcon />, name: "Save" },
+  { icon: <PrintIcon />, name: "Print" },
+  { icon: <ShareIcon />, name: "Share" },
+];
+const Search = styled.div`
+  position: relative;
+  border-radius: 2;
+  background-color: white;
+  margin-left: calc(${sideBarWidth} + 20px);
+  margin-top: 25px;
+  width: 10%;
+`;
+
+const SearchIconWrapper = styled.div`
+  /* padding: theme.spacing(0, 2); */
+  height: 100%;
+  position: absolute;
+  pointerevents: none;
+  display: flex;
+  alignitems: center;
+  justifycontent: center;
+`;
+
+const StyledInputBase = styled(InputBase)`
+  color: inherit;
 `;
 
 function AppLayout() {
   return (
     <>
-      <TopNav></TopNav>
+      <TopNav>
+        <Search>
+          <SearchIconWrapper>
+            <SearchIcon />
+          </SearchIconWrapper>
+          <StyledInputBase
+            placeholder="Search…"
+            inputProps={{ "aria-label": "search" }}
+          />
+        </Search>
+      </TopNav>
 
       <SideNav>
         <Stack alignItems="center" spacing={3} mt={3}>
@@ -70,6 +130,27 @@ function AppLayout() {
 
       <MainArea>
         <Outlet />
+        <Box
+          sx={{
+            height: "90vh",
+            transform: "translateZ(0px)",
+            flexGrow: 1,
+          }}
+        >
+          <SpeedDial
+            ariaLabel="SpeedDial openIcon example"
+            sx={{ position: "absolute", bottom: 16, right: 16 }}
+            icon={<SpeedDialIcon />}
+          >
+            {actions.map((action) => (
+              <SpeedDialAction
+                key={action.name}
+                icon={action.icon}
+                tooltipTitle={action.name}
+              />
+            ))}
+          </SpeedDial>
+        </Box>
       </MainArea>
     </>
   );
