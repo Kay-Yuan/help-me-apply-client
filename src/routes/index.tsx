@@ -1,5 +1,6 @@
 import { useRoutes } from "react-router-dom";
 import { MainLayout } from "@layout";
+import { CompanyContainer } from "@views/company";
 
 const MainRoutes = {
   path: "/",
@@ -9,7 +10,11 @@ const MainRoutes = {
     { path: "/", element: <div>Dashboard</div> },
     {
       path: "/company",
-      element: <div>Company</div>,
+      element: (
+        <div>
+          <CompanyContainer />
+        </div>
+      ),
     },
     {
       path: "/job",

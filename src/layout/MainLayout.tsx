@@ -129,24 +129,25 @@ function AppLayout() {
 
       <MainArea>
         <Outlet />
-        <Box
-          sx={{
-            height: "85vh",
-            transform: "translateZ(0px)",
-            flexGrow: 1,
-          }}
-        >
-          <SpeedDial
-            ariaLabel="SpeedDial openIcon example"
-            sx={{ position: "absolute", bottom: 16, right: 16 }}
-            icon={<SpeedDialIcon />}
-          >
-            {actions.map((action) => (
-              <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} />
-            ))}
-          </SpeedDial>
-        </Box>
       </MainArea>
+
+      <Box
+        sx={{
+          height: "100%",
+          transform: "translateZ(0px)",
+          flexGrow: 1,
+        }}
+      >
+        <SpeedDial
+          ariaLabel="SpeedDial openIcon example"
+          sx={{ position: "absolute", bottom: 16, right: 16 }}
+          icon={<SpeedDialIcon />}
+        >
+          {actions.map((action) => (
+            <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} />
+          ))}
+        </SpeedDial>
+      </Box>
     </>
   );
 }
