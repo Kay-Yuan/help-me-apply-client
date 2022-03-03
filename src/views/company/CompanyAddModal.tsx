@@ -5,6 +5,11 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import Input from "@mui/material/Input";
+
+import { useForm, Controller } from "react-hook-form";
+import { joiResolver } from "@hookform/resolvers/joi";
+import Joi from "joi";
 
 import CompanyList from "./CompnayList";
 import { FormControl, Grid, Rating, TextField } from "@mui/material";
@@ -38,10 +43,27 @@ const style = {
   p: 4,
 };
 
-export default function CompanyAddModal({
-  isOpen,
-  onClose,
-}: CompanyAddModalProps) {
+const addCompanyModalSchema = Joi.object().keys({
+  companyName: Joi.string().required().messages({
+    "string.empty": "Company name is required",
+  }),
+});
+
+export default function CompanyAddModal({ isOpen, onClose }: CompanyAddModalProps) {
+  const {
+    getValues,
+    control,
+    register,
+    formState: { errors },
+    trigger,
+  } = useForm({
+    resolver: joiResolver(addCompanyModalSchema),
+    defaultValues: {
+      companyName: "",
+    },
+    mode: "all",
+  });
+
   const [rate, setRate] = useState<number>(0);
   const [newCompany, setNewCompany] = useState<Company>(null);
 
@@ -68,14 +90,33 @@ export default function CompanyAddModal({
 
         <hr />
 
-        <Typography
-          component="form"
-          id="modal-modal-description"
-          sx={{ mt: 2 }}
-        >
+        <Typography component="form" id="modal-modal-description" sx={{ mt: 2 }}>
           <Grid container spacing={2}>
             <Grid item xs={5}>
-              <TextField
+              <Controller
+                name="companyName"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    // onBlur={() => {
+                    //   console.log("hello world");
+                    //   trigger("companyName");
+                    // }}
+                    onBlur={() => {
+                      field.onBlur();
+                    }}
+                    {...register("companyName")}
+                    required
+                    label="Company Name"
+                    variant="standard"
+                    fullWidth
+                    error={!!errors.companyName}
+                    helperText={errors.companyName?.message}
+                    {...field}
+                  />
+                )}
+              />
+              {/* <TextField
                 required
                 id="modal-companyName"
                 name="companyName"
@@ -83,7 +124,7 @@ export default function CompanyAddModal({
                 variant="standard"
                 fullWidth
                 onChange={handleInputChange}
-              />
+              /> */}
             </Grid>
             <Grid item xs={7}>
               <TextField
@@ -106,6 +147,7 @@ export default function CompanyAddModal({
                 onChange={handleInputChange}
               />
             </Grid>
+
             <Grid item xs={4}>
               <TextField
                 id="modal-recruiterName"
@@ -116,6 +158,7 @@ export default function CompanyAddModal({
                 onChange={handleInputChange}
               />
             </Grid>
+
             <Grid item xs={4}>
               <TextField
                 id="modal-recruiterEmail"
@@ -126,6 +169,7 @@ export default function CompanyAddModal({
                 onChange={handleInputChange}
               />
             </Grid>
+
             <Grid item xs={4}>
               <TextField
                 id="modal-recruiterNumber"
@@ -136,6 +180,7 @@ export default function CompanyAddModal({
                 onChange={handleInputChange}
               />
             </Grid>
+
             <Grid item>
               <h4>Rate: </h4>
               <Rating
@@ -155,9 +200,14 @@ export default function CompanyAddModal({
             Cancel
           </Button>
           <Button
+            onClick={async () => {
+              const result = await trigger();
+
+              console.log(getValues());
+            }}
             variant="contained"
             color="success"
-            onClick={handleAddNewCompany}
+            // onClick={handleAddNewCompany}
             autoFocus
             style={{ marginLeft: "15px" }}
           >
