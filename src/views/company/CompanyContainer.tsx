@@ -18,7 +18,13 @@ export default function CompanyContainer() {
   return (
     <div>
       <Box component="div" padding="30px">
-        <Button onClick={handleOpen}>Add Company</Button>
+        <Button
+          variant="outlined"
+          onClick={handleOpen}
+          style={{ marginBottom: "10px" }}
+        >
+          Add Company
+        </Button>
 
         <CompanyList reload={reload} />
 
