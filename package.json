@@ -9,12 +9,15 @@
   },
   "dependencies": {
     "@emotion/react": "^11.8.1",
+    "@hookform/resolvers": "^2.8.8",
     "@mui/icons-material": "^5.4.4",
     "@mui/material": "^5.4.3",
     "@mui/styled-engine-sc": "^5.4.2",
     "axios": "^0.26.0",
+    "joi": "^17.6.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-hook-form": "^7.27.1",
     "react-router-dom": "^6.2.1",
     "styled-components": "^5.3.3",
     "uuid": "^8.3.2"
