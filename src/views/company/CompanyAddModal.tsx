@@ -158,9 +158,7 @@ export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProp
                 control={control}
                 render={({ field }) => (
                   <TextField
-                    onBlur={() => {
-                      field.onBlur();
-                    }}
+                    onBlur={field.onBlur}
                     {...register("companyName")}
                     required
                     label="Company Name"
@@ -179,9 +177,7 @@ export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProp
                 control={control}
                 render={({ field }) => (
                   <TextField
-                    onBlur={() => {
-                      field.onBlur();
-                    }}
+                    onBlur={field.onBlur}
                     {...register("companyURL")}
                     required
                     label="Company URL"
@@ -200,9 +196,7 @@ export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProp
                 control={control}
                 render={({ field }) => (
                   <TextField
-                    onBlur={() => {
-                      field.onBlur();
-                    }}
+                    onBlur={field.onBlur}
                     {...register("companyAddress")}
                     label="Company Address"
                     variant="standard"
@@ -263,9 +257,7 @@ export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProp
                 control={control}
                 render={({ field }) => (
                   <TextField
-                    onBlur={() => {
-                      field.onBlur();
-                    }}
+                    onBlur={field.onBlur}
                     {...register("recruiterNumber")}
                     label="Recruiter Number"
                     variant="standard"
@@ -296,6 +288,7 @@ export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProp
           <Button variant="outlined" onClick={onClose}>
             Cancel
           </Button>
+
           <LoadingButton
             onClick={handleCreate}
             loading={isLoading}
