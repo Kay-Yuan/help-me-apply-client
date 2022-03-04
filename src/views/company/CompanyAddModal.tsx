@@ -14,6 +14,7 @@ import Joi from "joi";
 import CompanyList from "./CompnayList";
 import { FormControl, Grid, Rating, TextField } from "@mui/material";
 import { send } from "process";
+import companyService from "@services/company";
 
 interface CompanyAddModalProps {
   isOpen: boolean;
@@ -21,9 +22,9 @@ interface CompanyAddModalProps {
 }
 
 interface Company {
-  // id: uuidv4;
+  id: string;
   companyName: string;
-  companyURL?: string;
+  companyURL: string;
   companyAddress?: string;
   recruiterName?: string;
   recruiterEmail?: string;
@@ -44,12 +45,46 @@ const style = {
 };
 
 const addCompanyModalSchema = Joi.object().keys({
-  companyName: Joi.string().required().messages({
+  companyName: Joi.string().max(100).required().messages({
     "string.empty": "Company name is required",
+    "string.max": "Please input characters less than 100",
+  }),
+  companyURL: Joi.string()
+    .max(150)
+    .uri({ scheme: ["https"] })
+    .required()
+    .messages({
+      "string.empty": "Company URL is required",
+      "string.max": "Please input characters less than 150",
+      "string.uri": "Please input valid(full url with https://) URL",
+    }),
+  companyAddress: Joi.string().optional().min(0).max(255).messages({
+    "string.max": "Please input characters less than 255",
+  }),
+  recruiterName: Joi.string()
+    .optional()
+    .min(0)
+    .max(100)
+    .messages({ "string.max": "Please input characters less than 100" }),
+  recruiterEmail: Joi.string()
+    .optional()
+    .allow("")
+    .email({ tlds: { allow: false }, ignoreLength: true })
+    .min(0)
+    .max(150)
+    .messages({
+      "string.max": "Please input characters less than 150",
+      "string.email": "Please input valid email",
+    }),
+  recruiterNumber: Joi.string().optional().min(0).max(50).messages({
+    "string.max": "Please input characters less than 50",
   }),
 });
 
-export default function CompanyAddModal({ isOpen, onClose }: CompanyAddModalProps) {
+export default function CompanyAddModal({
+  isOpen,
+  onClose,
+}: CompanyAddModalProps) {
   const {
     getValues,
     control,
@@ -59,22 +94,33 @@ export default function CompanyAddModal({ isOpen, onClose }: CompanyAddModalProp
   } = useForm({
     resolver: joiResolver(addCompanyModalSchema),
     defaultValues: {
-      companyName: "",
+      companyName: undefined,
+      companyURL: undefined,
+      companyAddress: undefined,
+      recruiterName: undefined,
+      recruiterEmail: undefined,
+      recruiterNumber: undefined,
     },
     mode: "all",
   });
 
   const [rate, setRate] = useState<number>(0);
-  const [newCompany, setNewCompany] = useState<Company>(null);
+  const [newCompany, setNewCompany] = useState<Company>({});
 
-  const handleAddNewCompany = () => {
-    console.log(newCompany);
-  };
+  // const handleAddNewCompany = () => {
+  //   setNewCompany({ ...getValues(), id: uuidv4(), rate });
+  //   console.log(newCompany);
+  //   (async () => {
+  //     const response = await companyService.addCompany(newCompany);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewCompany({ ...newCompany, [name]: value });
-  };
+  //     console.log(response);
+  //   })();
+  // };
+
+  // const handleInputChange = (e: any) => {
+  //   const { name, value } = e.target;
+  //   setNewCompany({ ...newCompany, [name]: value });
+  // };
 
   return (
     <Modal
@@ -90,7 +136,11 @@ export default function CompanyAddModal({ isOpen, onClose }: CompanyAddModalProp
 
         <hr />
 
-        <Typography component="form" id="modal-modal-description" sx={{ mt: 2 }}>
+        <Typography
+          component="form"
+          id="modal-modal-description"
+          sx={{ mt: 2 }}
+        >
           <Grid container spacing={2}>
             <Grid item xs={5}>
               <Controller
@@ -98,10 +148,6 @@ export default function CompanyAddModal({ isOpen, onClose }: CompanyAddModalProp
                 control={control}
                 render={({ field }) => (
                   <TextField
-                    // onBlur={() => {
-                    //   console.log("hello world");
-                    //   trigger("companyName");
-                    // }}
                     onBlur={() => {
                       field.onBlur();
                     }}
@@ -116,68 +162,109 @@ export default function CompanyAddModal({ isOpen, onClose }: CompanyAddModalProp
                   />
                 )}
               />
-              {/* <TextField
-                required
-                id="modal-companyName"
-                name="companyName"
-                label="Company Name"
-                variant="standard"
-                fullWidth
-                onChange={handleInputChange}
-              /> */}
             </Grid>
             <Grid item xs={7}>
-              <TextField
-                required
-                id="modal-companyURL"
+              <Controller
                 name="companyURL"
-                label="Company URL"
-                variant="standard"
-                fullWidth
-                onChange={handleInputChange}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    onBlur={() => {
+                      field.onBlur();
+                    }}
+                    {...register("companyURL")}
+                    required
+                    label="Company URL"
+                    variant="standard"
+                    fullWidth
+                    error={!!errors.companyURL}
+                    helperText={errors.companyURL?.message}
+                    {...field}
+                  />
+                )}
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                id="modal-companyAddress"
+              <Controller
                 name="companyAddress"
-                label="Company Address"
-                variant="standard"
-                fullWidth
-                onChange={handleInputChange}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    onBlur={() => {
+                      field.onBlur();
+                    }}
+                    {...register("companyAddress")}
+                    label="Company Address"
+                    variant="standard"
+                    fullWidth
+                    error={!!errors.companyAddress}
+                    helperText={errors.companyAddress?.message}
+                    {...field}
+                  />
+                )}
               />
             </Grid>
 
             <Grid item xs={4}>
-              <TextField
-                id="modal-recruiterName"
+              <Controller
                 name="recruiterName"
-                label="Recruiter Name"
-                variant="standard"
-                fullWidth
-                onChange={handleInputChange}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    onBlur={() => {
+                      field.onBlur();
+                    }}
+                    {...register("recruiterName")}
+                    label="Recruiter Name"
+                    variant="standard"
+                    fullWidth
+                    error={!!errors.recruiterName}
+                    helperText={errors.recruiterName?.message}
+                    {...field}
+                  />
+                )}
               />
             </Grid>
 
             <Grid item xs={4}>
-              <TextField
-                id="modal-recruiterEmail"
+              <Controller
                 name="recruiterEmail"
-                label="Recruiter Email"
-                variant="standard"
-                fullWidth
-                onChange={handleInputChange}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    onBlur={() => {
+                      field.onBlur();
+                    }}
+                    {...register("recruiterEmail")}
+                    label="Recruiter Email"
+                    variant="standard"
+                    fullWidth
+                    error={!!errors.recruiterEmail}
+                    helperText={errors.recruiterEmail?.message}
+                    {...field}
+                  />
+                )}
               />
             </Grid>
 
             <Grid item xs={4}>
-              <TextField
-                id="modal-recruiterNumber"
+              <Controller
                 name="recruiterNumber"
-                label="Recruiter Number"
-                variant="standard"
-                fullWidth
-                onChange={handleInputChange}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    onBlur={() => {
+                      field.onBlur();
+                    }}
+                    {...register("recruiterNumber")}
+                    label="Recruiter Number"
+                    variant="standard"
+                    fullWidth
+                    error={!!errors.recruiterNumber}
+                    helperText={errors.recruiterNumber?.message}
+                    {...field}
+                  />
+                )}
               />
             </Grid>
 
@@ -201,9 +288,16 @@ export default function CompanyAddModal({ isOpen, onClose }: CompanyAddModalProp
           </Button>
           <Button
             onClick={async () => {
-              const result = await trigger();
+              // const result = await trigger();
 
-              console.log(getValues());
+              // console.log(getValues());
+              // setNewCompany();
+              const response = await companyService.addCompany({
+                ...getValues(),
+                id: uuidv4(),
+                rate,
+              });
+              console.log(response);
             }}
             variant="contained"
             color="success"
