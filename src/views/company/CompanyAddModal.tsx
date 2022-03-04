@@ -5,7 +5,9 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import Input from "@mui/material/Input";
+import { useSnackbar } from "notistack";
+
+import { LoadingButton } from "@mui/lab";
 
 import { useForm, Controller } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
@@ -17,8 +19,8 @@ import { send } from "process";
 import companyService from "@services/company";
 
 interface CompanyAddModalProps {
-  isOpen: boolean;
   onClose: () => void;
+  reload: () => void;
 }
 
 interface Company {
@@ -51,12 +53,12 @@ const addCompanyModalSchema = Joi.object().keys({
   }),
   companyURL: Joi.string()
     .max(150)
-    .uri({ scheme: ["https"] })
+    .uri({ scheme: ["https", "http"] })
     .required()
     .messages({
       "string.empty": "Company URL is required",
       "string.max": "Please input characters less than 150",
-      "string.uri": "Please input valid(full url with https://) URL",
+      "string.uri": "Please input valid(full url with https:// or http://) URL",
     }),
   companyAddress: Joi.string().optional().min(0).max(255).messages({
     "string.max": "Please input characters less than 255",
@@ -81,15 +83,13 @@ const addCompanyModalSchema = Joi.object().keys({
   }),
 });
 
-export default function CompanyAddModal({
-  isOpen,
-  onClose,
-}: CompanyAddModalProps) {
+export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProps) {
   const {
     getValues,
     control,
     register,
     formState: { errors },
+    reset,
     trigger,
   } = useForm({
     resolver: joiResolver(addCompanyModalSchema),
@@ -104,8 +104,12 @@ export default function CompanyAddModal({
     mode: "all",
   });
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const [rate, setRate] = useState<number>(0);
-  const [newCompany, setNewCompany] = useState<Company>({});
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [newCompany, setNewCompany] = useState<Company>({});
 
   // const handleAddNewCompany = () => {
   //   setNewCompany({ ...getValues(), id: uuidv4(), rate });
@@ -121,14 +125,24 @@ export default function CompanyAddModal({
   //   const { name, value } = e.target;
   //   setNewCompany({ ...newCompany, [name]: value });
   // };
+  const handleCreate = async () => {
+    setIsLoading(true);
+
+    const response = await companyService.addCompany({
+      ...getValues(),
+      rate,
+    });
+
+    setIsLoading(false);
+
+    onClose();
+    reset();
+    enqueueSnackbar("Company added successfully", { variant: "success" });
+    reload();
+  };
 
   return (
-    <Modal
-      open={isOpen}
-      onClose={onClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+    <Modal open={true} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
       <Box sx={style}>
         <Typography id="modal-modal-title" variant="h6" component="h2">
           Add Company
@@ -136,11 +150,7 @@ export default function CompanyAddModal({
 
         <hr />
 
-        <Typography
-          component="form"
-          id="modal-modal-description"
-          sx={{ mt: 2 }}
-        >
+        <Typography component="form" id="modal-modal-description" sx={{ mt: 2 }}>
           <Grid container spacing={2}>
             <Grid item xs={5}>
               <Controller
@@ -286,28 +296,21 @@ export default function CompanyAddModal({
           <Button variant="outlined" onClick={onClose}>
             Cancel
           </Button>
-          <Button
-            onClick={async () => {
-              // const result = await trigger();
-
-              // console.log(getValues());
-              // setNewCompany();
-              const response = await companyService.addCompany({
-                ...getValues(),
-                id: uuidv4(),
-                rate,
-              });
-              console.log(response);
-            }}
+          <LoadingButton
+            onClick={handleCreate}
+            loading={isLoading}
             variant="contained"
             color="success"
             // onClick={handleAddNewCompany}
             autoFocus
             style={{ marginLeft: "15px" }}
+            disabled={isLoading}
           >
             Add
-          </Button>
+          </LoadingButton>
         </Typography>
+
+        {/* <CircularProgress /> */}
       </Box>
     </Modal>
   );

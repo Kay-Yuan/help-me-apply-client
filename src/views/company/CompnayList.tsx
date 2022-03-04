@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, TablePagination } from "@mui/material";
+import { Box, TablePagination, CircularProgress } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -65,17 +65,25 @@ function BasicTable(props: CompanyTableProps) {
   );
 }
 
-export default function CompanyList(reload: any) {
-  const [companies, setCompanies] = useState<Company[]>([]);
+export default function CompanyList({ isLoading, companies }: { isLoading: boolean; companies: Company[] }) {
+  return (
+    <>
+      {isLoading && (
+        <Box component="div" display="flex" alignItems="center" justifyContent="center" height="300px">
+          <CircularProgress />
+        </Box>
+      )}
 
-  useEffect(() => {
-    (async () => {
-      const response = await companyService.getCompanies(0);
-      setCompanies(response);
+      {console.log("company list render")}
 
-      console.log("loading data");
-    })();
-  }, [reload]);
-
-  return <BasicTable companyData={companies} />;
+      {!isLoading &&
+        (companies.length === 0 ? (
+          <Box component="div" mt={2}>
+            No companies found
+          </Box>
+        ) : (
+          <BasicTable companyData={companies} />
+        ))}
+    </>
+  );
 }

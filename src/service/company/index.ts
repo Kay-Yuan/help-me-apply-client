@@ -20,10 +20,12 @@ const companyService = {
     return data;
   },
 
-  addCompany: async (newCompany: Company) => {
-    const response = await axios.post(`${baseUrl}/company/create`, newCompany);
+  addCompany: async (newCompany: Omit<Company, "id">) => {
+    console.log(newCompany);
 
-    return response;
+    const { data } = await axios.post(`${baseUrl}/company/create`, newCompany);
+
+    return data;
   },
 };
 
