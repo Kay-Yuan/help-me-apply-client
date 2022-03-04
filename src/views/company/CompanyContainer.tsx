@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 // import { Modal, Button } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -19,6 +19,8 @@ interface Company {
   recruiterNumber?: string;
   rate?: number;
 }
+
+const CompanyListMemo = memo(CompanyList);
 
 export default function CompanyContainer() {
   const [isLoadingTableContent, setIsLoadingTableContent] = useState(true);
@@ -48,7 +50,7 @@ export default function CompanyContainer() {
           Add Company
         </Button>
 
-        <CompanyList isLoading={isLoadingTableContent} companies={companies} />
+        <CompanyListMemo isLoading={isLoadingTableContent} companies={companies} />
 
         {isOpenAddCompanyModal && <AddCompanyModal onClose={handleClose} reload={() => setReload({})} />}
       </Box>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { Box, TablePagination, CircularProgress } from "@mui/material";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -65,7 +65,7 @@ function BasicTable(props: CompanyTableProps) {
   );
 }
 
-export default function CompanyList({ isLoading, companies }: { isLoading: boolean; companies: Company[] }) {
+function CompanyList({ isLoading, companies }: { isLoading: boolean; companies: Company[] }) {
   return (
     <>
       {isLoading && (
@@ -87,3 +87,5 @@ export default function CompanyList({ isLoading, companies }: { isLoading: boole
     </>
   );
 }
+
+export default CompanyList;
