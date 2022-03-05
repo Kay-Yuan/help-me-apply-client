@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 
 import CompanyList from "./CompnayList";
-import AddCompanyModal from "./CompanyAddModal";
+import AddCompanyModal from "./AddCompanyModal";
 import companyService from "@services/company";
 
 interface Company {

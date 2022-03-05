@@ -1,4 +1,4 @@
 export { default as CompanyList } from "./CompnayList";
-export { default as CompanyAddModal } from "./CompanyAddModal";
+export { default as CompanyAddModal } from "./AddCompanyModal";
 export { default as CompanyContainer } from "./CompanyContainer";
-export { default as CompanyId } from "./CompanyId";
+export { default as CompanyId } from "./CompanyDetail";

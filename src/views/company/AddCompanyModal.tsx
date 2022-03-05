@@ -36,7 +36,7 @@ interface Company {
 
 const style = {
   position: "absolute",
-  top: "30%",
+  top: "40%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 800,
@@ -109,22 +109,7 @@ export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProp
   const [rate, setRate] = useState<number>(0);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [newCompany, setNewCompany] = useState<Company>({});
 
-  // const handleAddNewCompany = () => {
-  //   setNewCompany({ ...getValues(), id: uuidv4(), rate });
-  //   console.log(newCompany);
-  //   (async () => {
-  //     const response = await companyService.addCompany(newCompany);
-
-  //     console.log(response);
-  //   })();
-  // };
-
-  // const handleInputChange = (e: any) => {
-  //   const { name, value } = e.target;
-  //   setNewCompany({ ...newCompany, [name]: value });
-  // };
   const handleCreate = async () => {
     setIsLoading(true);
 

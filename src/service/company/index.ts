@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:5001";
+const baseUrl = "http://localhost:5000";
 
 interface Company {
   id: string;
@@ -20,10 +20,22 @@ const companyService = {
     return data;
   },
 
+  getCompany: async (id: string) => {
+    const { data } = await axios.get(`${baseUrl}/company/${id}`);
+
+    return data;
+  },
+
   addCompany: async (newCompany: Omit<Company, "id">) => {
     console.log(newCompany);
 
     const { data } = await axios.post(`${baseUrl}/company/create`, newCompany);
+
+    return data;
+  },
+
+  deleteCompany: async (id: string) => {
+    const { data } = await axios.delete(`${baseUrl}/company/${id}`);
 
     return data;
   },
