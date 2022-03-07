@@ -1,23 +1,19 @@
 import { useEffect, useState } from "react";
 import { Button, Box, Modal } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
-import companyService from "@services/company";
+import applicationService from "@services/application";
 import { useSnackbar } from "notistack";
-
-interface Company {
+interface Application {
   id: string;
-  companyName: string;
-  companyURL?: string;
-  companyAddress?: string;
-  recruiterName?: string;
-  recruiterEmail?: string;
-  recruiterNumber?: string;
-  rate?: number;
+  dateCreated: Date;
+  applicationStatus?: string;
+  expectedSalary?: string;
+  jobId: string;
 }
 
-export default function CompanyDetail() {
-  const [companyData, setCompanyData] = useState<Company>(null);
-  const { companyId } = useParams();
+export default function ApplicationDetail() {
+  const [applicationData, setApplicationData] = useState<Application>(null);
+  const { applicationId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] =
@@ -25,8 +21,10 @@ export default function CompanyDetail() {
 
   useEffect(() => {
     (async () => {
-      const _companyData = await companyService.getCompany(companyId);
-      setCompanyData(_companyData);
+      const _applicationData = await applicationService.getApplication(
+        applicationId
+      );
+      setApplicationData(_applicationData);
     })();
   }, []);
 
@@ -40,10 +38,12 @@ export default function CompanyDetail() {
 
   const handleConfirmDelete = () => {
     (async () => {
-      await companyService.deleteCompany(companyId);
+      await applicationService.deleteApplication(applicationId);
       navigate(-1);
 
-      enqueueSnackbar("Company deleted successfully", { variant: "success" });
+      enqueueSnackbar("Application deleted successfully", {
+        variant: "success",
+      });
     })();
   };
 
@@ -86,34 +86,21 @@ export default function CompanyDetail() {
         </Box>
       </Modal>
 
-      <Box component="h1">{companyData?.companyName}</Box>
-      <Box component="div">
-        <Box component="a" href={companyData?.companyURL} target="_blank">
-          {companyData?.companyURL}
-        </Box>
-      </Box>
-      {companyData?.companyAddress && (
-        <Box component="h4">Company Address: {companyData?.companyAddress}</Box>
-      )}
-      {companyData?.recruiterName && (
-        <Box component="div" pt={1}>
-          Recruiter Name{companyData?.recruiterName}
-        </Box>
-      )}
-      {companyData?.recruiterEmail && (
-        <Box component="div" pt={1}>
-          Recruiter Email: {companyData?.recruiterEmail}
-        </Box>
-      )}
-      {companyData?.recruiterNumber && (
-        <Box component="div" pt={1}>
-          recruiterNumber: {companyData?.recruiterNumber}
-        </Box>
-      )}
+      <Box component="h1">{applicationData?.dateCreated}</Box>
 
-      {(companyData?.rate === 0 || companyData?.rate) && (
+      {applicationData?.applicationStatus && (
+        <Box component="h4">
+          Application Status: {applicationData?.applicationStatus}
+        </Box>
+      )}
+      {applicationData?.dateCreated && (
         <Box component="div" pt={1}>
-          Rate: {companyData?.rate}
+          Description: {applicationData?.dateCreated}
+        </Box>
+      )}
+      {applicationData?.expectedSalary && (
+        <Box component="div" pt={1}>
+          Requirement: {applicationData?.expectedSalary}
         </Box>
       )}
     </Box>

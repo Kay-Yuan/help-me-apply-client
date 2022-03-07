@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 
-import CompanyList from "./CompnayList";
+import CompanyList from "./CompanyList";
 import AddCompanyModal from "./AddCompanyModal";
 import companyService from "@services/company";
 
@@ -46,13 +46,22 @@ export default function CompanyContainer() {
   return (
     <div>
       <Box component="div" padding="30px">
-        <Button variant="outlined" onClick={handleOpen} style={{ marginBottom: "10px" }}>
+        <Button
+          variant="outlined"
+          onClick={handleOpen}
+          style={{ marginBottom: "10px" }}
+        >
           Add Company
         </Button>
 
-        <CompanyListMemo isLoading={isLoadingTableContent} companies={companies} />
+        <CompanyListMemo
+          isLoading={isLoadingTableContent}
+          companies={companies}
+        />
 
-        {isOpenAddCompanyModal && <AddCompanyModal onClose={handleClose} reload={() => setReload({})} />}
+        {isOpenAddCompanyModal && (
+          <AddCompanyModal onClose={handleClose} reload={() => setReload({})} />
+        )}
       </Box>
     </div>
   );

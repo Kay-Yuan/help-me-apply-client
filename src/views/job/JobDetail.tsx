@@ -1,23 +1,25 @@
 import { useEffect, useState } from "react";
 import { Button, Box, Modal } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
-import companyService from "@services/company";
+import jobService from "@services/job";
 import { useSnackbar } from "notistack";
-
-interface Company {
+interface Job {
   id: string;
-  companyName: string;
-  companyURL?: string;
-  companyAddress?: string;
-  recruiterName?: string;
-  recruiterEmail?: string;
-  recruiterNumber?: string;
-  rate?: number;
+  jobLink: string;
+  jobTitle?: string;
+  jobLocation?: string;
+  jobDescription?: string;
+  jobRequirement?: string;
+  jobExperienceLevel?: string;
+  jobType?: number;
+  jobSalaryRange?: string;
+  jobStatus?: string;
+  companyId: string;
 }
 
-export default function CompanyDetail() {
-  const [companyData, setCompanyData] = useState<Company>(null);
-  const { companyId } = useParams();
+export default function JobDetail() {
+  const [jobData, setJobData] = useState<Job>(null);
+  const { jobId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] =
@@ -25,8 +27,8 @@ export default function CompanyDetail() {
 
   useEffect(() => {
     (async () => {
-      const _companyData = await companyService.getCompany(companyId);
-      setCompanyData(_companyData);
+      const _jobData = await jobService.getJob(jobId);
+      setJobData(_jobData);
     })();
   }, []);
 
@@ -40,10 +42,10 @@ export default function CompanyDetail() {
 
   const handleConfirmDelete = () => {
     (async () => {
-      await companyService.deleteCompany(companyId);
+      await jobService.deleteJob(jobId);
       navigate(-1);
 
-      enqueueSnackbar("Company deleted successfully", { variant: "success" });
+      enqueueSnackbar("Job deleted successfully", { variant: "success" });
     })();
   };
 
@@ -86,34 +88,35 @@ export default function CompanyDetail() {
         </Box>
       </Modal>
 
-      <Box component="h1">{companyData?.companyName}</Box>
-      <Box component="div">
-        <Box component="a" href={companyData?.companyURL} target="_blank">
-          {companyData?.companyURL}
-        </Box>
-      </Box>
-      {companyData?.companyAddress && (
-        <Box component="h4">Company Address: {companyData?.companyAddress}</Box>
-      )}
-      {companyData?.recruiterName && (
-        <Box component="div" pt={1}>
-          Recruiter Name{companyData?.recruiterName}
+      <Box component="h1">{jobData?.jobTitle}</Box>
+
+      {jobData?.jobLink && (
+        <Box component="a" href={jobData?.jobLink} target="_blank">
+          {jobData?.jobLink}
         </Box>
       )}
-      {companyData?.recruiterEmail && (
+      {jobData?.jobLocation && (
+        <Box component="h4">Job Address: {jobData?.jobLocation}</Box>
+      )}
+      {jobData?.jobDescription && (
         <Box component="div" pt={1}>
-          Recruiter Email: {companyData?.recruiterEmail}
+          Description: {jobData?.jobDescription}
         </Box>
       )}
-      {companyData?.recruiterNumber && (
+      {jobData?.jobRequirement && (
         <Box component="div" pt={1}>
-          recruiterNumber: {companyData?.recruiterNumber}
+          Requirement: {jobData?.jobRequirement}
+        </Box>
+      )}
+      {jobData?.jobSalaryRange && (
+        <Box component="div" pt={1}>
+          Salary: {jobData?.jobSalaryRange}
         </Box>
       )}
 
-      {(companyData?.rate === 0 || companyData?.rate) && (
+      {jobData?.jobStatus && (
         <Box component="div" pt={1}>
-          Rate: {companyData?.rate}
+          Status: {jobData?.jobStatus}
         </Box>
       )}
     </Box>

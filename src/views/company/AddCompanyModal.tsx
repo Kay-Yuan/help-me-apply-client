@@ -13,7 +13,7 @@ import { useForm, Controller } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
 
-import CompanyList from "./CompnayList";
+import CompanyList from "./CompanyList";
 import { FormControl, Grid, Rating, TextField } from "@mui/material";
 import { send } from "process";
 import companyService from "@services/company";
@@ -83,7 +83,10 @@ const addCompanyModalSchema = Joi.object().keys({
   }),
 });
 
-export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProps) {
+export default function CompanyAddModal({
+  onClose,
+  reload,
+}: CompanyAddModalProps) {
   const {
     getValues,
     control,
@@ -127,7 +130,12 @@ export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProp
   };
 
   return (
-    <Modal open={true} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+    <Modal
+      open={true}
+      onClose={onClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
       <Box sx={style}>
         <Typography id="modal-modal-title" variant="h6" component="h2">
           Add Company
@@ -135,7 +143,11 @@ export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProp
 
         <hr />
 
-        <Typography component="form" id="modal-modal-description" sx={{ mt: 2 }}>
+        <Typography
+          component="form"
+          id="modal-modal-description"
+          sx={{ mt: 2 }}
+        >
           <Grid container spacing={2}>
             <Grid item xs={5}>
               <Controller
