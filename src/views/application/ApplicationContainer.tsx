@@ -53,11 +53,13 @@ export default function ApplicationContainer() {
           isLoading={isLoadingTableContent}
           applications={applications}
         />
-        <AddApplicationModal
-          open={isOpenAddApplicationModal}
-          onClose={handleClose}
-          reload={() => setReload({})}
-        />
+        {isOpenAddApplicationModal && (
+          <AddApplicationModal
+            open={true}
+            onClose={handleClose}
+            reload={() => setReload({})}
+          />
+        )}
       </Box>
     </div>
   );

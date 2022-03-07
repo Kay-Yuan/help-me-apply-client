@@ -102,11 +102,7 @@ const addJobModalSchema = Joi.object().keys({
   }),
 });
 
-export default function JobAddModal({
-  open,
-  onClose,
-  reload,
-}: JobAddModalProps) {
+export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
   const {
     getValues,
     control,
@@ -149,7 +145,7 @@ export default function JobAddModal({
 
   return (
     <Modal
-      open={open}
+      open={true}
       onClose={onClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"

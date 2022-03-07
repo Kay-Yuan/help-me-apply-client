@@ -66,7 +66,6 @@ const addApplicationModalSchema = Joi.object().keys({
 });
 
 export default function ApplicationAddModal({
-  open,
   onClose,
   reload,
 }: ApplicationAddModalProps) {
@@ -106,7 +105,7 @@ export default function ApplicationAddModal({
 
   return (
     <Modal
-      open={open}
+      open={true}
       onClose={onClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
@@ -124,25 +123,6 @@ export default function ApplicationAddModal({
           sx={{ mt: 2, mb: 4 }}
         >
           <Grid container spacing={2}>
-            <Grid item xs={5}>
-              <Controller
-                name="dateCreated"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    onBlur={field.onBlur}
-                    {...register("dateCreated")}
-                    required
-                    label="Application Create Time"
-                    variant="standard"
-                    fullWidth
-                    error={!!errors.dateCreated}
-                    helperText={errors.dateCreated?.message}
-                    {...field}
-                  />
-                )}
-              />
-            </Grid>
             <Grid item xs={7}>
               <Controller
                 name="applicationStatus"

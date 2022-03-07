@@ -55,11 +55,13 @@ export default function JobContainer() {
           Add Job
         </Button>
         <JobListMemo isLoading={isLoadingTableContent} jobs={jobs} />
-        <AddJobModal
-          open={isOpenAddJobModal}
-          onClose={handleClose}
-          reload={() => setReload({})}
-        />
+        {isOpenAddJobModal && (
+          <AddJobModal
+            open={true}
+            onClose={handleClose}
+            reload={() => setReload({})}
+          />
+        )}
       </Box>
     </div>
   );
