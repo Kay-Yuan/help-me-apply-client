@@ -39,6 +39,12 @@ const companyService = {
 
     return data;
   },
+
+  searchCompanyByName: async (name: string) => {
+    const { data } = await axios.get(`${baseUrl}/company/search?name=${name}`);
+
+    return data;
+  }
 };
 
 export default companyService;
