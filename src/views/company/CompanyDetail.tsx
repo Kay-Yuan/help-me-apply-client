@@ -97,7 +97,7 @@ export default function CompanyDetail() {
       )}
       {companyData?.recruiterName && (
         <Box component="div" pt={1}>
-          Recruiter Name{companyData?.recruiterName}
+          Recruiter Name: {companyData?.recruiterName}
         </Box>
       )}
       {companyData?.recruiterEmail && (
