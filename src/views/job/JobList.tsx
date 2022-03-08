@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 import JobService from "@services/job";
 import styled from "styled-components";
+import { Job } from "@global/job";
 
 const StyledTableRow = styled(TableRow)`
   &:hover {
@@ -18,21 +19,6 @@ const StyledTableRow = styled(TableRow)`
     transition: all 0.3s ease;
   }
 `;
-
-interface Job {
-  id: string;
-  jobLink: string;
-  jobTitle?: string;
-  jobLocation?: string;
-  jobDescription?: string;
-  jobRequirement?: string;
-  jobExperienceLevel?: string;
-  jobType?: number;
-  jobSalaryRange?: string;
-  jobStatus?: string;
-  companyId: string;
-}
-
 interface JobTableProps {
   JobData: Job[];
 }

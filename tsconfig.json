@@ -21,6 +21,7 @@
       "@layout": ["src/layout/index.ts"],
       "@views/*": ["src/views/*"],
       "@services/*": ["src/service/*"],
+      "@global/*": ["src/global/*"],
       "@mui/styled-engine": ["./node_modules/@mui/styled-engine-sc"]
     }
   },

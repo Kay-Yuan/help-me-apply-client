@@ -1,17 +1,7 @@
 import axios from "axios";
+import { Company } from "@global/company";
 
 const baseUrl = import.meta.env.VITE_API_URL;
-
-interface Company {
-  id: string;
-  companyName: string;
-  companyURL: string;
-  companyAddress?: string;
-  recruiterName?: string;
-  recruiterEmail?: string;
-  recruiterNumber?: string;
-  rate?: number;
-}
 
 const companyService = {
   getCompanies: async (offset: number) => {
@@ -44,7 +34,7 @@ const companyService = {
     const { data } = await axios.get(`${baseUrl}/company/search?name=${name}`);
 
     return data;
-  }
+  },
 };
 
 export default companyService;

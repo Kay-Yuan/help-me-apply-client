@@ -3,17 +3,7 @@ import { Button, Box, Modal } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import companyService from "@services/company";
 import { useSnackbar } from "notistack";
-
-interface Company {
-  id: string;
-  companyName: string;
-  companyURL?: string;
-  companyAddress?: string;
-  recruiterName?: string;
-  recruiterEmail?: string;
-  recruiterNumber?: string;
-  rate?: number;
-}
+import { Company } from "@global/company";
 
 export default function CompanyDetail() {
   const [companyData, setCompanyData] = useState<Company>(null);
@@ -68,8 +58,11 @@ export default function CompanyDetail() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box p={2} style={{ marginLeft: "45%", marginTop: "20%" }}>
-          <Box component="span">
+        <Box p={2} style={{ marginLeft: "35%", marginTop: "20%" }}>
+          <Box component="p" color={"white"} fontSize={30}>
+            Do you want to delete {companyData?.companyName} company?
+          </Box>
+          <Box component="span" ml={18}>
             <Button onClick={handleClose} variant="contained">
               Cancel
             </Button>

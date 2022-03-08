@@ -3,13 +3,7 @@ import { Button, Box, Modal } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import applicationService from "@services/application";
 import { useSnackbar } from "notistack";
-interface Application {
-  id: string;
-  dateCreated: Date;
-  applicationStatus?: string;
-  expectedSalary?: string;
-  jobId: string;
-}
+import { Application } from "@global/application";
 
 export default function ApplicationDetail() {
   const [applicationData, setApplicationData] = useState<Application>(null);
@@ -68,8 +62,11 @@ export default function ApplicationDetail() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box p={2} style={{ marginLeft: "45%", marginTop: "20%" }}>
-          <Box component="span">
+        <Box p={2} style={{ marginLeft: "35%", marginTop: "20%" }}>
+          <Box component="p" color={"white"} fontSize={30}>
+            Do you want to delete this application?
+          </Box>
+          <Box component="span" ml={12}>
             <Button onClick={handleClose} variant="contained">
               Cancel
             </Button>

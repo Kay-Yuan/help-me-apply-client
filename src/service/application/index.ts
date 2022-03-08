@@ -1,14 +1,7 @@
 import axios from "axios";
+import { Application } from "@global/application";
 
 const baseUrl = import.meta.env.VITE_API_URL;
-
-interface Application {
-  id: string;
-  dateCreated: Date;
-  applicationStatus?: string;
-  expectedSalary?: string;
-  jobId: string;
-}
 
 const ApplicationService = {
   getApplications: async (offset: number) => {

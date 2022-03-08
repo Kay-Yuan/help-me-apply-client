@@ -1,20 +1,7 @@
 import axios from "axios";
+import { Job } from "@global/job";
 
 const baseUrl = import.meta.env.VITE_API_URL;
-
-interface Job {
-  id: string;
-  jobLink: string;
-  jobTitle?: string;
-  jobLocation?: string;
-  jobDescription?: string;
-  jobRequirement?: string;
-  jobExperienceLevel?: string;
-  jobType?: number;
-  jobSalaryRange?: string;
-  jobStatus?: string;
-  companyId: string;
-}
 
 const JobService = {
   getJobs: async (offset: number) => {
@@ -25,6 +12,14 @@ const JobService = {
 
   getJob: async (id: string) => {
     const { data } = await axios.get(`${baseUrl}/job/${id}`);
+
+    return data;
+  },
+
+  getJobByTitle: async (jobTitle: string) => {
+    const { data } = await axios.get(
+      `${baseUrl}/job/search?jobTitle=${jobTitle}`
+    );
 
     return data;
   },

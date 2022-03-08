@@ -6,14 +6,7 @@ import Button from "@mui/material/Button";
 import ApplicationList from "./ApplicationList";
 import AddApplicationModal from "./AddApplicationModal";
 import ApplicationService from "@services/application";
-
-interface Application {
-  id: string;
-  dateCreated: Date;
-  applicationStatus?: string;
-  expectedSalary?: string;
-  jobId: string;
-}
+import { Application } from "@global/application";
 
 const ApplicationListMemo = memo(ApplicationList);
 

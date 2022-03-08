@@ -6,20 +6,7 @@ import Button from "@mui/material/Button";
 import JobList from "./JobList";
 import AddJobModal from "./AddJobModal";
 import JobService from "@services/job";
-
-interface Job {
-  id: string;
-  jobLink: string;
-  jobTitle?: string;
-  jobLocation?: string;
-  jobDescription?: string;
-  jobRequirement?: string;
-  jobExperienceLevel?: string;
-  jobType?: number;
-  jobSalaryRange?: string;
-  jobStatus?: string;
-  companyId: string;
-}
+import { Job } from "@global/job";
 
 const JobListMemo = memo(JobList);
 

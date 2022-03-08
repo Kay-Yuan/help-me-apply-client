@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 import ApplicationService from "@services/application";
 import styled from "styled-components";
+import { Application } from "@global/application";
 
 const StyledTableRow = styled(TableRow)`
   &:hover {
@@ -18,14 +19,6 @@ const StyledTableRow = styled(TableRow)`
     transition: all 0.3s ease;
   }
 `;
-
-interface Application {
-  id: string;
-  dateCreated: Date;
-  applicationStatus?: string;
-  expectedSalary?: string;
-  jobId: string;
-}
 
 interface ApplicationTableProps {
   ApplicationData: Application[];
@@ -102,7 +95,7 @@ function ApplicationList({
       {!isLoading &&
         (applications.length === 0 ? (
           <Box component="div" mt={2}>
-            No companies found
+            No application found
           </Box>
         ) : (
           <BasicTable ApplicationData={applications} />

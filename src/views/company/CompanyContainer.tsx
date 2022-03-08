@@ -8,17 +8,7 @@ import Modal from "@mui/material/Modal";
 import CompanyList from "./CompanyList";
 import AddCompanyModal from "./AddCompanyModal";
 import companyService from "@services/company";
-
-interface Company {
-  id: string;
-  companyName: string;
-  companyURL?: string;
-  companyAddress?: string;
-  recruiterName?: string;
-  recruiterEmail?: string;
-  recruiterNumber?: string;
-  rate?: number;
-}
+import { Company } from "@global/company";
 
 const CompanyListMemo = memo(CompanyList);
 

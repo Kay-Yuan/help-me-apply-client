@@ -3,19 +3,7 @@ import { Button, Box, Modal } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import jobService from "@services/job";
 import { useSnackbar } from "notistack";
-interface Job {
-  id: string;
-  jobLink: string;
-  jobTitle?: string;
-  jobLocation?: string;
-  jobDescription?: string;
-  jobRequirement?: string;
-  jobExperienceLevel?: string;
-  jobType?: number;
-  jobSalaryRange?: string;
-  jobStatus?: string;
-  companyId: string;
-}
+import { Job } from "@global/job";
 
 export default function JobDetail() {
   const [jobData, setJobData] = useState<Job>(null);
@@ -70,8 +58,11 @@ export default function JobDetail() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box p={2} style={{ marginLeft: "45%", marginTop: "20%" }}>
-          <Box component="span">
+        <Box p={2} style={{ marginLeft: "35%", marginTop: "20%" }}>
+          <Box component="p" color={"white"} fontSize={30}>
+            Do you want to delete this job?
+          </Box>
+          <Box component="span" ml={10}>
             <Button onClick={handleClose} variant="contained">
               Cancel
             </Button>

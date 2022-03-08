@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 // import { Modal, Button } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -12,8 +12,9 @@ import { LoadingButton } from "@mui/lab";
 import { useForm, Controller } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
-
+import JobService from "@services/job";
 import {
+  Autocomplete,
   FormControl,
   Grid,
   InputLabel,
@@ -30,14 +31,6 @@ interface ApplicationAddModalProps {
   open: boolean;
   onClose: () => void;
   reload: () => void;
-}
-
-interface Application {
-  id: string;
-  dateCreated: Date;
-  applicationStatus?: string;
-  expectedSalary?: string;
-  applicationId: string;
 }
 
 const style = {
@@ -74,11 +67,13 @@ export default function ApplicationAddModal({
     control,
     register,
     formState: { errors },
+    setValue,
     reset,
     trigger,
   } = useForm({
     resolver: joiResolver(addApplicationModalSchema),
     defaultValues: {
+      jobId: undefined,
       dateCreated: undefined,
       applicationStatus: undefined,
       expectedSalary: undefined,
@@ -89,6 +84,24 @@ export default function ApplicationAddModal({
   const { enqueueSnackbar } = useSnackbar();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [jobOptions, setJobOptions] = useState([]);
+  const [searchJobByTitle, setSearchJobByTitle] = useState<string>("");
+
+  useEffect(() => {
+    if (searchJobByTitle !== "") {
+      (async () => {
+        const response = await JobService.getJobByTitle(searchJobByTitle);
+        // console.log(response);
+        const _remaprJobOptions = response.length
+          ? response.map((job) => ({
+              label: job.jobTitle,
+              id: job.id,
+            }))
+          : [];
+        setJobOptions(_remaprJobOptions);
+      })();
+    }
+  }, [searchJobByTitle]);
 
   const handleCreate = async () => {
     setIsLoading(true);
@@ -116,6 +129,28 @@ export default function ApplicationAddModal({
         </Typography>
 
         <hr />
+
+        <Autocomplete
+          disablePortal
+          options={jobOptions}
+          sx={{ width: 500 }}
+          onChange={(_, newValue, reason) => {
+            if (reason === "selectOption") setValue("jobId", newValue.id);
+          }}
+          onInputChange={(_, newInputValue) => {
+            setSearchJobByTitle(newInputValue);
+          }}
+          renderInput={(params) => (
+            <TextField {...params} required label="Job" variant="standard" />
+          )}
+          renderOption={(props, option) => {
+            return (
+              <li {...props} key={option.id}>
+                {option.label}
+              </li>
+            );
+          }}
+        />
 
         <Typography
           component="form"
