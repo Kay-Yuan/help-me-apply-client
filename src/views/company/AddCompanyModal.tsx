@@ -17,6 +17,7 @@ import CompanyList from "./CompanyList";
 import { FormControl, Grid, Rating, TextField } from "@mui/material";
 import { send } from "process";
 import companyService from "@services/company";
+import { validateDateTime } from "@mui/lab/internal/pickers/date-time-utils";
 
 interface CompanyAddModalProps {
   onClose: () => void;
@@ -103,19 +104,31 @@ export default function CompanyAddModal({
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleCreate = async () => {
+    // first validate all the fields
+    const validationResult = await trigger()
+
+    if (!validationResult) return
+
     setIsLoading(true);
 
-    const response = await companyService.addCompany({
-      ...getValues(),
-      rate,
-    });
+    try {
+      const response = await companyService.addCompany({
+        ...getValues(),
+        rate,
+      });
+      
+      onClose();
+      reset();
+      enqueueSnackbar("Company added successfully", { variant: "success" });
+      reload();
+    } catch (error) {
+     enqueueSnackbar(error.message, { variant: "error" }); 
+    } finally {
+      setIsLoading(false);
+    }
 
-    setIsLoading(false);
 
-    onClose();
-    reset();
-    enqueueSnackbar("Company added successfully", { variant: "success" });
-    reload();
+
   };
 
   return (

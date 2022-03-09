@@ -33,6 +33,14 @@ interface JobAddModalProps {
   reload: () => void;
 }
 
+function debounce(func, timeout = 300){
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
+}
+
 const style = {
   position: "absolute",
   top: "40%",
@@ -85,7 +93,7 @@ const addJobModalSchema = Joi.object().keys({
   jobSalaryRange: Joi.string().optional().min(0).max(50).messages({
     "string.max": "Please input characters less than 50",
   }),
-  jobStatus: Joi.string().optional().min(0).max(255).messages({
+  jobStatus: Joi.string().required().min(0).max(255).messages({
     "string.max": "Please input characters less than 255",
   }),
   // FIXME: uuid repalce string
@@ -115,7 +123,7 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
       jobDescription: undefined,
       jobRequirement: undefined,
       jobExperienceLevel: undefined,
-      jobType: "",
+      jobType: undefined,
       jobSalaryRange: undefined,
       jobStatus: undefined,
     },
@@ -125,30 +133,37 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingCompanyList, setIsLoadingCompanyList] = useState(true);
 
   useEffect(() => {
     const fetchCompanyOptions = async () => {
+
+      setIsLoadingCompanyList(true)
+    
       const companies = await companyService.searchCompanyByName(
         searchCompanyByName
       );
 
-      console.log(companies);
-
       const _remapCompanyOptions = companies.length
         ? companies.map((company) => ({
             label: company.companyName,
+            id: company.id
           }))
         : [];
 
-      console.log(_remapCompanyOptions);
-
       setCompanyOptions(_remapCompanyOptions);
+
+      setIsLoadingCompanyList(false)
     };
 
     fetchCompanyOptions();
   }, [searchCompanyByName]);
 
   const handleCreate = async () => {
+    const validationResult = await trigger()
+
+    if (!validationResult) return
+
     setIsLoading(true);
 
     const response = await jobService.addJob(getValues());
@@ -160,6 +175,10 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
     enqueueSnackbar("Job added successfully", { variant: "success" });
     reload();
   };
+
+  const handleInputChange = (_, newInputValue) => {
+      setSearchCompanyByName(newInputValue);
+  }
 
   return (
     <Modal
@@ -176,14 +195,14 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
         <hr />
 
         <Autocomplete
+          loading={isLoadingCompanyList}
           disablePortal
           options={companyOptions}
           sx={{ width: 500 }}
-          onChange={(event, newValue) => setValue("companyId", newValue.id)}
-          onInputChange={(event, newInputValue) => {
-            console.log(newInputValue);
-            setSearchCompanyByName(newInputValue);
+          onChange={(event, newValue) => {
+            setValue("companyId", newValue.id)
           }}
+          onInputChange={debounce(handleInputChange)}
           renderInput={(params) => (
             <TextField
               required
@@ -402,7 +421,6 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
             loading={isLoading}
             variant="contained"
             color="success"
-            // onClick={handleAddNewJob}
             autoFocus
             style={{ marginLeft: "15px" }}
             disabled={isLoading}

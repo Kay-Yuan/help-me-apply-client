@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Box, Modal } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import { useParams, useNavigate } from "react-router-dom";
 import jobService from "@services/job";
 import { useSnackbar } from "notistack";
@@ -7,6 +8,7 @@ import { Job } from "@global/job";
 
 export default function JobDetail() {
   const [jobData, setJobData] = useState<Job>(null);
+  const [isDeleting, setIsDeleting] = useState(false)
   const { jobId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -30,10 +32,20 @@ export default function JobDetail() {
 
   const handleConfirmDelete = () => {
     (async () => {
-      await jobService.deleteJob(jobId);
-      navigate(-1);
+      try {
+        setIsDeleting(true)
 
-      enqueueSnackbar("Job deleted successfully", { variant: "success" });
+        await jobService.deleteJob(jobId);
+        navigate(-1);
+  
+        enqueueSnackbar("Job deleted successfully", { variant: "success" }); 
+      } catch (error) {
+       enqueueSnackbar(error.message, { variant: "error" });
+      } finally {
+        setIsDeleting(false)
+      }
+
+
     })();
   };
 
@@ -47,9 +59,9 @@ export default function JobDetail() {
         </Button>
       </Box>
       <Box component="span" ml={2}>
-        <Button onClick={handleDelete} variant="contained" color="error">
+        <LoadingButton onClick={handleDelete} variant="contained" color="error" loading={isDeleting}>
           Delete
-        </Button>
+        </LoadingButton>
       </Box>
 
       <Modal
