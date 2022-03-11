@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { Button, Box, Modal } from "@mui/material";
+import { Button, Box, Modal, CircularProgress } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
-import companyService from "@services/company";
+import applicationService from "@services/application";
 import { useSnackbar } from "notistack";
-import { Company } from "@global/company";
+import { Application } from "@global/application";
 
-export default function CompanyDetail() {
-  const [companyData, setCompanyData] = useState<Company>(null);
-  const { companyId } = useParams();
+export default function ApplicationDetail() {
+  const [applicationData, setApplicationData] = useState<Application>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { applicationId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] =
@@ -15,8 +16,12 @@ export default function CompanyDetail() {
 
   useEffect(() => {
     (async () => {
-      const _companyData = await companyService.getCompany(companyId);
-      setCompanyData(_companyData);
+      setIsLoading(true);
+      const _applicationData = await applicationService.getApplication(
+        applicationId
+      );
+      setApplicationData(_applicationData);
+      setIsLoading(false);
     })();
   }, []);
 
@@ -30,10 +35,12 @@ export default function CompanyDetail() {
 
   const handleConfirmDelete = () => {
     (async () => {
-      await companyService.deleteCompany(companyId);
+      await applicationService.deleteApplication(applicationId);
       navigate(-1);
 
-      enqueueSnackbar("Company deleted successfully", { variant: "success" });
+      enqueueSnackbar("Application deleted successfully", {
+        variant: "success",
+      });
     })();
   };
 
@@ -60,9 +67,9 @@ export default function CompanyDetail() {
       >
         <Box p={2} style={{ marginLeft: "35%", marginTop: "20%" }}>
           <Box component="p" color={"white"} fontSize={30}>
-            Do you want to delete {companyData?.companyName} company?
+            Do you want to delete this application?
           </Box>
-          <Box component="span" ml={18}>
+          <Box component="span" ml={12}>
             <Button onClick={handleClose} variant="contained">
               Cancel
             </Button>
@@ -79,34 +86,33 @@ export default function CompanyDetail() {
         </Box>
       </Modal>
 
-      <Box component="h1">{companyData?.companyName}</Box>
-      <Box component="div">
-        <Box component="a" href={companyData?.companyURL} target="_blank">
-          {companyData?.companyURL}
-        </Box>
-      </Box>
-      {companyData?.companyAddress && (
-        <Box component="h4">Company Address: {companyData?.companyAddress}</Box>
-      )}
-      {companyData?.recruiterName && (
-        <Box component="div" pt={1}>
-          Recruiter Name: {companyData?.recruiterName}
-        </Box>
-      )}
-      {companyData?.recruiterEmail && (
-        <Box component="div" pt={1}>
-          Recruiter Email: {companyData?.recruiterEmail}
-        </Box>
-      )}
-      {companyData?.recruiterNumber && (
-        <Box component="div" pt={1}>
-          recruiterNumber: {companyData?.recruiterNumber}
+      {isLoading && (
+        <Box
+          component="div"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          height="300px"
+        >
+          <CircularProgress />
         </Box>
       )}
 
-      {(companyData?.rate === 0 || companyData?.rate) && (
+      {!isLoading && <Box component="h1">{applicationData?.dateCreated}</Box>}
+
+      {applicationData?.applicationStatus && (
+        <Box component="h4">
+          Application Status: {applicationData?.applicationStatus}
+        </Box>
+      )}
+      {applicationData?.dateCreated && (
         <Box component="div" pt={1}>
-          Rate: {companyData?.rate}
+          Description: {applicationData?.dateCreated}
+        </Box>
+      )}
+      {applicationData?.expectedSalary && (
+        <Box component="div" pt={1}>
+          Requirement: {applicationData?.expectedSalary}
         </Box>
       )}
     </Box>

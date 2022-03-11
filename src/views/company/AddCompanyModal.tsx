@@ -13,25 +13,15 @@ import { useForm, Controller } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
 
-import CompanyList from "./CompnayList";
+import CompanyList from "./CompanyList";
 import { FormControl, Grid, Rating, TextField } from "@mui/material";
 import { send } from "process";
 import companyService from "@services/company";
+import { validateDateTime } from "@mui/lab/internal/pickers/date-time-utils";
 
 interface CompanyAddModalProps {
   onClose: () => void;
   reload: () => void;
-}
-
-interface Company {
-  id: string;
-  companyName: string;
-  companyURL: string;
-  companyAddress?: string;
-  recruiterName?: string;
-  recruiterEmail?: string;
-  recruiterNumber?: string;
-  rate?: number;
 }
 
 const style = {
@@ -83,7 +73,10 @@ const addCompanyModalSchema = Joi.object().keys({
   }),
 });
 
-export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProps) {
+export default function CompanyAddModal({
+  onClose,
+  reload,
+}: CompanyAddModalProps) {
   const {
     getValues,
     control,
@@ -111,23 +104,40 @@ export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProp
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleCreate = async () => {
+    // first validate all the fields
+    const validationResult = await trigger()
+
+    if (!validationResult) return
+
     setIsLoading(true);
 
-    const response = await companyService.addCompany({
-      ...getValues(),
-      rate,
-    });
+    try {
+      const response = await companyService.addCompany({
+        ...getValues(),
+        rate,
+      });
+      
+      onClose();
+      reset();
+      enqueueSnackbar("Company added successfully", { variant: "success" });
+      reload();
+    } catch (error) {
+     enqueueSnackbar(error.message, { variant: "error" }); 
+    } finally {
+      setIsLoading(false);
+    }
 
-    setIsLoading(false);
 
-    onClose();
-    reset();
-    enqueueSnackbar("Company added successfully", { variant: "success" });
-    reload();
+
   };
 
   return (
-    <Modal open={true} onClose={onClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+    <Modal
+      open={true}
+      onClose={onClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
       <Box sx={style}>
         <Typography id="modal-modal-title" variant="h6" component="h2">
           Add Company
@@ -135,7 +145,11 @@ export default function CompanyAddModal({ onClose, reload }: CompanyAddModalProp
 
         <hr />
 
-        <Typography component="form" id="modal-modal-description" sx={{ mt: 2 }}>
+        <Typography
+          component="form"
+          id="modal-modal-description"
+          sx={{ mt: 2 }}
+        >
           <Grid container spacing={2}>
             <Grid item xs={5}>
               <Controller

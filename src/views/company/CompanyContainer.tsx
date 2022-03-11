@@ -4,25 +4,18 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import { useSnackbar } from "notistack";
 
-import CompanyList from "./CompnayList";
+import CompanyList from "./CompanyList";
 import AddCompanyModal from "./AddCompanyModal";
 import companyService from "@services/company";
-
-interface Company {
-  id: string;
-  companyName: string;
-  companyURL?: string;
-  companyAddress?: string;
-  recruiterName?: string;
-  recruiterEmail?: string;
-  recruiterNumber?: string;
-  rate?: number;
-}
+import { Company } from "@global/company";
 
 const CompanyListMemo = memo(CompanyList);
 
 export default function CompanyContainer() {
+  const { enqueueSnackbar } = useSnackbar();
+
   const [isLoadingTableContent, setIsLoadingTableContent] = useState(true);
   const [companies, setCompanies] = useState<Company[]>([]);
 
@@ -36,23 +29,38 @@ export default function CompanyContainer() {
     (async () => {
       setIsLoadingTableContent(true);
 
-      const response = await companyService.getCompanies(0);
-      setCompanies(response);
+      try {
+        const response = await companyService.getCompanies(0);
 
-      setIsLoadingTableContent(false);
+        setCompanies(response);
+
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: "error" });    
+      } finally {
+        setIsLoadingTableContent(false);
+      }
     })();
   }, [reload]);
 
   return (
     <div>
       <Box component="div" padding="30px">
-        <Button variant="outlined" onClick={handleOpen} style={{ marginBottom: "10px" }}>
+        <Button
+          variant="outlined"
+          onClick={handleOpen}
+          style={{ marginBottom: "10px" }}
+        >
           Add Company
         </Button>
 
-        <CompanyListMemo isLoading={isLoadingTableContent} companies={companies} />
+        <CompanyListMemo
+          isLoading={isLoadingTableContent}
+          companies={companies}
+        />
 
-        {isOpenAddCompanyModal && <AddCompanyModal onClose={handleClose} reload={() => setReload({})} />}
+        {isOpenAddCompanyModal && (
+          <AddCompanyModal onClose={handleClose} reload={() => setReload({})} />
+        )}
       </Box>
     </div>
   );

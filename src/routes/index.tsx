@@ -1,6 +1,9 @@
 import { useRoutes } from "react-router-dom";
 import { MainLayout } from "@layout";
-import { CompanyContainer, CompanyId } from "@views/company";
+import { CompanyContainer, CompanyDetail } from "@views/company";
+import { JobContainer, JobDetail } from "@views/job";
+import { ApplicationContainer, ApplicationDetail } from "@views/application";
+import { dividerClasses } from "@mui/material";
 
 const MainRoutes = {
   path: "/",
@@ -18,15 +21,20 @@ const MainRoutes = {
     },
     {
       path: "/company/:companyId",
-      element: <CompanyId />,
+      element: <CompanyDetail />,
     },
     {
       path: "/job",
-      element: <div>Job</div>,
+      element: <JobContainer />,
     },
+    { path: "/job/:jobId", element: <JobDetail /> },
     {
       path: "/application",
-      element: <div>Application</div>,
+      element: <ApplicationContainer />,
+    },
+    {
+      path: "/application/:applicationId",
+      element: <ApplicationDetail />,
     },
   ],
 };

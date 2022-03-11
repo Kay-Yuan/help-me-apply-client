@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 import companyService from "@services/company";
 import styled from "styled-components";
+import { Company } from "@global/company";
 
 const StyledTableRow = styled(TableRow)`
   &:hover {
@@ -18,17 +19,6 @@ const StyledTableRow = styled(TableRow)`
     transition: all 0.3s ease;
   }
 `;
-
-interface Company {
-  id: string;
-  companyName: string;
-  companyURL?: string;
-  companyAddress?: string;
-  recruiterName?: string;
-  recruiterEmail?: string;
-  recruiterNumber?: string;
-  rate?: number;
-}
 
 interface CompanyTableProps {
   companyData: Company[];
@@ -81,11 +71,23 @@ function BasicTable(props: CompanyTableProps) {
   );
 }
 
-function CompanyList({ isLoading, companies }: { isLoading: boolean; companies: Company[] }) {
+function CompanyList({
+  isLoading,
+  companies,
+}: {
+  isLoading: boolean;
+  companies: Company[];
+}) {
   return (
     <>
       {isLoading && (
-        <Box component="div" display="flex" alignItems="center" justifyContent="center" height="300px">
+        <Box
+          component="div"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          height="300px"
+        >
           <CircularProgress />
         </Box>
       )}

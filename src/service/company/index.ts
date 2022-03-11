@@ -1,17 +1,7 @@
 import axios from "axios";
+import { Company } from "@global/company";
 
 const baseUrl = import.meta.env.VITE_API_URL;
-
-interface Company {
-  id: string;
-  companyName: string;
-  companyURL: string;
-  companyAddress?: string;
-  recruiterName?: string;
-  recruiterEmail?: string;
-  recruiterNumber?: string;
-  rate?: number;
-}
 
 const companyService = {
   getCompanies: async (offset: number) => {
@@ -26,6 +16,14 @@ const companyService = {
     return data;
   },
 
+  getCompanyByName: async (companyName: string) => {
+    const { data } = await axios.get(
+      `${baseUrl}/company/search?companyName=${companyName}`
+    );
+
+    return data;
+  },
+
   addCompany: async (newCompany: Omit<Company, "id">) => {
     console.log(newCompany);
 
@@ -36,6 +34,12 @@ const companyService = {
 
   deleteCompany: async (id: string) => {
     const { data } = await axios.delete(`${baseUrl}/company/${id}`);
+
+    return data;
+  },
+
+  searchCompanyByName: async (name: string) => {
+    const { data } = await axios.get(`${baseUrl}/company/search?name=${name}`);
 
     return data;
   },
