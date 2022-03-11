@@ -23,7 +23,6 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { send } from "process";
 import jobService from "@services/job";
 import companyService from "@services/company";
 import { Company } from "@global/company";
@@ -283,7 +282,7 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
                       field.onBlur();
                     }}
                     {...register("jobRequirement")}
-                    label="Job Requirement"
+                    label="Job Requirement (keywords only)"
                     variant="standard"
                     fullWidth
                     error={!!errors.jobRequirement}

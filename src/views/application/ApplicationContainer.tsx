@@ -8,11 +8,16 @@ import AddApplicationModal from "./AddApplicationModal";
 import ApplicationService from "@services/application";
 import { Application } from "@global/application";
 
+interface ApplicationWithCompanyJobTitle extends Application {
+  companyName: string;
+  jobTitle: string;
+}
+
 const ApplicationListMemo = memo(ApplicationList);
 
 export default function ApplicationContainer() {
   const [isLoadingTableContent, setIsLoadingTableContent] = useState(true);
-  const [applications, setApplications] = useState<Application[]>([]);
+  const [applications, setApplications] = useState<ApplicationWithCompanyJobTitle[]>([]);
 
   const [reload, setReload] = useState({});
   const [isOpenAddApplicationModal, setIsOpenAddApplicationModal] =
@@ -25,7 +30,7 @@ export default function ApplicationContainer() {
     (async () => {
       setIsLoadingTableContent(true);
 
-      const response = await ApplicationService.getApplications(0);
+      const response = await ApplicationService.applicationListsWithCompanyNameJobTitle();
       setApplications(response);
 
       setIsLoadingTableContent(false);

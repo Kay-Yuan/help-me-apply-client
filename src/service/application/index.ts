@@ -32,6 +32,12 @@ const ApplicationService = {
 
     return data;
   },
+
+  applicationListsWithCompanyNameJobTitle: async () => {
+    const { data } = await axios.get(`${baseUrl}/application/lists`);
+
+    return data;
+  }
 };
 
 export default ApplicationService;

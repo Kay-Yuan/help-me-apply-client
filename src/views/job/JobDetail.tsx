@@ -137,7 +137,7 @@ export default function JobDetail() {
 
       {jobData?.jobStatus && (
         <Box component="div" pt={1}>
-          Status: {jobData?.jobStatus}
+          Status: {jobData?.jobStatus === true ? "Active" : "Inactive"}
         </Box>
       )}
     </Box>

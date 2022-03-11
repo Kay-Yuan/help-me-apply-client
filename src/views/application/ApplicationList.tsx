@@ -8,10 +8,14 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useNavigate } from "react-router-dom";
+import styled from 'styled-components'
 
 import ApplicationService from "@services/application";
-import styled from "styled-components";
 import { Application } from "@global/application";
+
+const StyledTableHead = styled(TableCell)`
+  font-weight: bold;
+`
 
 const StyledTableRow = styled(TableRow)`
   &:hover {
@@ -20,8 +24,13 @@ const StyledTableRow = styled(TableRow)`
   }
 `;
 
+interface ApplicationWithCompanyJobTitle extends Application {
+  companyName: string;
+  jobTitle: string;
+}
+
 interface ApplicationTableProps {
-  ApplicationData: Application[];
+  ApplicationData: ApplicationWithCompanyJobTitle[];
 }
 
 function BasicTable(props: ApplicationTableProps) {
@@ -34,8 +43,10 @@ function BasicTable(props: ApplicationTableProps) {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Application Create Time</TableCell>
-              <TableCell>Application Experience Level</TableCell>
+              <StyledTableHead>Company Name</StyledTableHead>
+              <StyledTableHead>Job Name</StyledTableHead>
+              <StyledTableHead>Application Create Time</StyledTableHead>
+              <StyledTableHead>Application Status</StyledTableHead>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -47,7 +58,13 @@ function BasicTable(props: ApplicationTableProps) {
                 onClick={() => navigate(`/Application/${Application.id}`)}
               >
                 <TableCell component="th" scope="row">
-                  {Application.dateCreated}
+                  {Application.companyName}
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  {Application.jobTitle}
+                </TableCell>
+                <TableCell component="th" scope="row">
+                  {new Date(Application.dateCreated).toLocaleString()}
                 </TableCell>
                 <TableCell>{Application.applicationStatus}</TableCell>
               </StyledTableRow>
@@ -74,7 +91,7 @@ function ApplicationList({
   applications,
 }: {
   isLoading: boolean;
-  applications: Application[];
+  applications: ApplicationWithCompanyJobTitle[];
 }) {
   return (
     <>
