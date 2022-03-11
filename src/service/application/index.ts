@@ -16,7 +16,7 @@ const ApplicationService = {
     return data;
   },
 
-  addApplication: async (newApplication: Omit<Application, "id" | "jobId">) => {
+  addApplication: async (newApplication: Omit<Application, "id">) => {
     console.log(newApplication);
 
     const { data } = await axios.post(

@@ -26,6 +26,7 @@ import {
 import { send } from "process";
 import jobService from "@services/job";
 import companyService from "@services/company";
+import { Company } from "@global/company";
 
 interface JobAddModalProps {
   open: boolean;
@@ -33,11 +34,13 @@ interface JobAddModalProps {
   reload: () => void;
 }
 
-function debounce(func, timeout = 300){
+function debounce(func, timeout = 300) {
   let timer;
   return (...args) => {
     clearTimeout(timer);
-    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, timeout);
   };
 }
 
@@ -96,8 +99,12 @@ const addJobModalSchema = Joi.object().keys({
   jobStatus: Joi.string().required().min(0).max(255).messages({
     "string.max": "Please input characters less than 255",
   }),
-  // FIXME: uuid repalce string
-  companyId: Joi.string(),
+
+  companyId: Joi.string()
+    .guid({
+      version: ["uuidv4", "uuidv5"],
+    })
+    .required(),
 });
 
 export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
@@ -137,32 +144,31 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
 
   useEffect(() => {
     const fetchCompanyOptions = async () => {
+      setIsLoadingCompanyList(true);
 
-      setIsLoadingCompanyList(true)
-    
-      const companies = await companyService.searchCompanyByName(
+      const companies = await companyService.getCompanyByName(
         searchCompanyByName
       );
 
       const _remapCompanyOptions = companies.length
-        ? companies.map((company) => ({
+        ? companies.map((company: Company) => ({
             label: company.companyName,
-            id: company.id
+            id: company.id,
           }))
         : [];
 
       setCompanyOptions(_remapCompanyOptions);
 
-      setIsLoadingCompanyList(false)
+      setIsLoadingCompanyList(false);
     };
 
     fetchCompanyOptions();
   }, [searchCompanyByName]);
 
   const handleCreate = async () => {
-    const validationResult = await trigger()
+    const validationResult = await trigger();
 
-    if (!validationResult) return
+    if (!validationResult) return;
 
     setIsLoading(true);
 
@@ -177,8 +183,8 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
   };
 
   const handleInputChange = (_, newInputValue) => {
-      setSearchCompanyByName(newInputValue);
-  }
+    setSearchCompanyByName(newInputValue);
+  };
 
   return (
     <Modal
@@ -200,15 +206,24 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
           options={companyOptions}
           sx={{ width: 500 }}
           onChange={(event, newValue) => {
-            setValue("companyId", newValue.id)
+            setValue("companyId", newValue.id);
           }}
           onInputChange={debounce(handleInputChange)}
           renderInput={(params) => (
-            <TextField
-              required
-              {...params}
-              label="Related Company"
-              variant="standard"
+            <Controller
+              name="companyId"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  onBlur={field.onBlur}
+                  required
+                  {...params}
+                  label="Related Company"
+                  variant="standard"
+                  error={!!errors.companyId}
+                  helperText={errors.companyId?.message}
+                />
+              )}
             />
           )}
         />
@@ -377,6 +392,7 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
                     label="Job Status"
                     variant="standard"
                     fullWidth
+                    required
                     error={!!errors.jobStatus}
                     helperText={errors.jobStatus?.message}
                     {...field}

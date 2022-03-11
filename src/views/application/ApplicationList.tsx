@@ -90,8 +90,6 @@ function ApplicationList({
         </Box>
       )}
 
-      {console.log("Application list render")}
-
       {!isLoading &&
         (applications.length === 0 ? (
           <Box component="div" mt={2}>

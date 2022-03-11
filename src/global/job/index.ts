@@ -8,6 +8,6 @@ export interface Job {
   jobExperienceLevel?: string;
   jobType?: number;
   jobSalaryRange?: string;
-  jobStatus?: string;
+  jobStatus?: boolean;
   companyId: string;
 }

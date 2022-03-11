@@ -3,7 +3,7 @@ import { Job } from "@global/job";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-const JobService = {
+const jobService = {
   getJobs: async (offset: number) => {
     const { data } = await axios.get(`${baseUrl}/job?offset=${offset}`);
 
@@ -16,10 +16,12 @@ const JobService = {
     return data;
   },
 
-  getJobByTitle: async (jobTitle: string) => {
-    const { data } = await axios.get(
-      `${baseUrl}/job/search?jobTitle=${jobTitle}`
-    );
+  getJobByTitle: async (jobTitle: string, companyId?: string) => {
+    const { data } = companyId
+      ? await axios.get(
+          `${baseUrl}/job/search?jobTitle=${jobTitle}&companyId=${companyId}`
+        )
+      : await axios.get(`${baseUrl}/job/search?jobTitle=${jobTitle}`);
 
     return data;
   },
@@ -39,4 +41,4 @@ const JobService = {
   },
 };
 
-export default JobService;
+export default jobService;

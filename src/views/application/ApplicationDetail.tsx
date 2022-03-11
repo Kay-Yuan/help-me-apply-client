@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Box, Modal } from "@mui/material";
+import { Button, Box, Modal, CircularProgress } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import applicationService from "@services/application";
 import { useSnackbar } from "notistack";
@@ -7,6 +7,7 @@ import { Application } from "@global/application";
 
 export default function ApplicationDetail() {
   const [applicationData, setApplicationData] = useState<Application>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { applicationId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -15,10 +16,12 @@ export default function ApplicationDetail() {
 
   useEffect(() => {
     (async () => {
+      setIsLoading(true);
       const _applicationData = await applicationService.getApplication(
         applicationId
       );
       setApplicationData(_applicationData);
+      setIsLoading(false);
     })();
   }, []);
 
@@ -83,7 +86,19 @@ export default function ApplicationDetail() {
         </Box>
       </Modal>
 
-      <Box component="h1">{applicationData?.dateCreated}</Box>
+      {isLoading && (
+        <Box
+          component="div"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          height="300px"
+        >
+          <CircularProgress />
+        </Box>
+      )}
+
+      {!isLoading && <Box component="h1">{applicationData?.dateCreated}</Box>}
 
       {applicationData?.applicationStatus && (
         <Box component="h4">

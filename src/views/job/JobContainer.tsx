@@ -26,6 +26,7 @@ export default function JobContainer() {
 
       const response = await JobService.getJobs(0);
       setJobs(response);
+      console.log(response);
 
       setIsLoadingTableContent(false);
     })();

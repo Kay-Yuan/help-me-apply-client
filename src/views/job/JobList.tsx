@@ -57,7 +57,9 @@ function BasicTable(props: JobTableProps) {
                   {Job.jobRequirement}
                 </TableCell>
                 <TableCell>{Job.jobExperienceLevel}</TableCell>
-                <TableCell>{Job.jobStatus}</TableCell>
+                <TableCell>
+                  {Job.jobStatus === true ? "Active" : "Inactive"}
+                </TableCell>
               </StyledTableRow>
             ))}
           </TableBody>

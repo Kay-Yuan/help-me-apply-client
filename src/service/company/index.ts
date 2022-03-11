@@ -16,6 +16,14 @@ const companyService = {
     return data;
   },
 
+  getCompanyByName: async (companyName: string) => {
+    const { data } = await axios.get(
+      `${baseUrl}/company/search?companyName=${companyName}`
+    );
+
+    return data;
+  },
+
   addCompany: async (newCompany: Omit<Company, "id">) => {
     console.log(newCompany);
 

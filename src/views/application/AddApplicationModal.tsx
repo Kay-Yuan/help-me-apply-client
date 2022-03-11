@@ -12,7 +12,8 @@ import { LoadingButton } from "@mui/lab";
 import { useForm, Controller } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
-import JobService from "@services/job";
+import jobService from "@services/job";
+
 import {
   Autocomplete,
   FormControl,
@@ -26,6 +27,8 @@ import {
 
 import applicationService from "@services/application";
 import { minWidth } from "@mui/lab/node_modules/@mui/system";
+import companyService from "@services/company";
+import publicService from "@services/public";
 
 interface ApplicationAddModalProps {
   open: boolean;
@@ -46,16 +49,19 @@ const style = {
 };
 
 const addApplicationModalSchema = Joi.object().keys({
-  dateCreated: Joi.date().timestamp().required().messages({
-    "string.empty": "Application title is required",
-  }),
+  jobId: Joi.string()
+    .guid({
+      version: ["uuidv4", "uuidv5"],
+    })
+    .required()
+    .messages({
+      "any.required": "Please select a company then select a Job!",
+    }),
   applicationStatus: Joi.string().optional().min(0).max(150).messages({
     "string.empty": "Application URL is required",
     "string.max": "Please input characters less than 150",
   }),
-  expectedSalary: Joi.number().optional().min(0).max(255).messages({
-    "string.max": "Please input characters less than 255",
-  }),
+  expectedSalary: Joi.number().optional().min(1).messages({}),
 });
 
 export default function ApplicationAddModal({
@@ -74,7 +80,6 @@ export default function ApplicationAddModal({
     resolver: joiResolver(addApplicationModalSchema),
     defaultValues: {
       jobId: undefined,
-      dateCreated: undefined,
       applicationStatus: undefined,
       expectedSalary: undefined,
     },
@@ -84,14 +89,42 @@ export default function ApplicationAddModal({
   const { enqueueSnackbar } = useSnackbar();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingCompanyList, setIsLoadingCompanyList] =
+    useState<boolean>(false);
+  const [isLoadingJobList, setIsLoadingJobList] = useState<boolean>(false);
+  const [selectedCompanyId, setSelectedCompanyId] = useState("");
   const [jobOptions, setJobOptions] = useState([]);
+  const [companiesOptions, setCompaniesOptions] = useState([]);
   const [searchJobByTitle, setSearchJobByTitle] = useState<string>("");
+  const [searchCompanyByName, setSearchCompanyByName] = useState<string>("");
 
   useEffect(() => {
-    if (searchJobByTitle !== "") {
+    (async () => {
+      setIsLoadingCompanyList(true);
+      const response = await companyService.getCompanyByName(
+        searchCompanyByName
+      );
+
+      const _remaprCompaniesOptions = response.length
+        ? response.map((company) => ({
+            label: company.companyName,
+            id: company.id,
+          }))
+        : [];
+      setCompaniesOptions(_remaprCompaniesOptions);
+      setIsLoadingCompanyList(false);
+    })();
+  }, [searchCompanyByName]);
+
+  useEffect(() => {
+    if (selectedCompanyId !== "") {
       (async () => {
-        const response = await JobService.getJobByTitle(searchJobByTitle);
-        // console.log(response);
+        setIsLoadingJobList(true);
+        const response = await jobService.getJobByTitle(
+          searchJobByTitle,
+          selectedCompanyId
+        );
+
         const _remaprJobOptions = response.length
           ? response.map((job) => ({
               label: job.jobTitle,
@@ -99,21 +132,38 @@ export default function ApplicationAddModal({
             }))
           : [];
         setJobOptions(_remaprJobOptions);
+        setIsLoadingJobList(false);
       })();
     }
-  }, [searchJobByTitle]);
+  }, [selectedCompanyId, searchJobByTitle]);
 
   const handleCreate = async () => {
     setIsLoading(true);
+    const validationResult = await trigger();
 
-    const response = await applicationService.addApplication(getValues());
+    if (!validationResult) {
+      setIsLoading(false);
+      return;
+    }
+    console.log("========= Pass validation ========");
+    try {
+      const response = await applicationService.addApplication(getValues());
 
-    setIsLoading(false);
+      console.log("========= Sent request ========");
+      setIsLoading(false);
+      onClose();
+      reset();
+      enqueueSnackbar("Application added successfully", { variant: "success" });
+      reload();
+    } catch (error) {}
+  };
 
-    onClose();
-    reset();
-    enqueueSnackbar("Application added successfully", { variant: "success" });
-    reload();
+  const handleCompanyInputChange = (_, newInputValue) => {
+    setSearchCompanyByName(newInputValue);
+  };
+
+  const handleJobInputChange = (_, newInputValue) => {
+    setSearchJobByTitle(newInputValue);
   };
 
   return (
@@ -130,35 +180,80 @@ export default function ApplicationAddModal({
 
         <hr />
 
-        <Autocomplete
-          disablePortal
-          options={jobOptions}
-          sx={{ width: 500 }}
-          onChange={(_, newValue, reason) => {
-            if (reason === "selectOption") setValue("jobId", newValue.id);
-          }}
-          onInputChange={(_, newInputValue) => {
-            setSearchJobByTitle(newInputValue);
-          }}
-          renderInput={(params) => (
-            <TextField {...params} required label="Job" variant="standard" />
-          )}
-          renderOption={(props, option) => {
-            return (
-              <li {...props} key={option.id}>
-                {option.label}
-              </li>
-            );
-          }}
-        />
-
         <Typography
           component="form"
           id="modal-modal-description"
           sx={{ mt: 2, mb: 4 }}
         >
           <Grid container spacing={2}>
-            <Grid item xs={7}>
+            <Grid item xs={6}>
+              <Autocomplete
+                loading={isLoadingCompanyList}
+                disablePortal
+                options={companiesOptions}
+                fullWidth
+                onChange={(_, newValue, reason) => {
+                  if (reason === "selectOption")
+                    setSelectedCompanyId(newValue.id);
+                }}
+                onInputChange={publicService.debounce(handleCompanyInputChange)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    required
+                    label="Which Company"
+                    variant="standard"
+                  />
+                )}
+                renderOption={(props, option) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.label}
+                    </li>
+                  );
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={6}>
+              <Autocomplete
+                loading={isLoadingJobList}
+                disablePortal
+                options={jobOptions}
+                fullWidth
+                onChange={(_, newValue, reason) => {
+                  if (reason === "selectOption") setValue("jobId", newValue.id);
+                }}
+                onInputChange={publicService.debounce(handleJobInputChange)}
+                renderInput={(params) => (
+                  <Controller
+                    name="jobId"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...params}
+                        onBlur={field.onBlur}
+                        required
+                        label="Job Title"
+                        variant="standard"
+                        error={!!errors.jobId}
+                        helperText={errors.jobId?.message}
+                        // Do we need this?
+                        // {...field}
+                      />
+                    )}
+                  />
+                )}
+                renderOption={(props, option) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.label}
+                    </li>
+                  );
+                }}
+              />
+            </Grid>
+            <Grid item xs={3}>
               <Controller
                 name="applicationStatus"
                 control={control}
@@ -211,7 +306,6 @@ export default function ApplicationAddModal({
             loading={isLoading}
             variant="contained"
             color="success"
-            // onClick={handleAddNewApplication}
             autoFocus
             style={{ marginLeft: "15px" }}
             disabled={isLoading}

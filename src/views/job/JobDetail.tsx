@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Box, Modal } from "@mui/material";
+import { Button, Box, Modal, CircularProgress } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { useParams, useNavigate } from "react-router-dom";
 import jobService from "@services/job";
@@ -8,7 +8,8 @@ import { Job } from "@global/job";
 
 export default function JobDetail() {
   const [jobData, setJobData] = useState<Job>(null);
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { jobId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -17,8 +18,10 @@ export default function JobDetail() {
 
   useEffect(() => {
     (async () => {
+      setIsLoading(true);
       const _jobData = await jobService.getJob(jobId);
       setJobData(_jobData);
+      setIsLoading(false);
     })();
   }, []);
 
@@ -33,19 +36,17 @@ export default function JobDetail() {
   const handleConfirmDelete = () => {
     (async () => {
       try {
-        setIsDeleting(true)
+        setIsDeleting(true);
 
         await jobService.deleteJob(jobId);
         navigate(-1);
-  
-        enqueueSnackbar("Job deleted successfully", { variant: "success" }); 
+
+        enqueueSnackbar("Job deleted successfully", { variant: "success" });
       } catch (error) {
-       enqueueSnackbar(error.message, { variant: "error" });
+        enqueueSnackbar(error.message, { variant: "error" });
       } finally {
-        setIsDeleting(false)
+        setIsDeleting(false);
       }
-
-
     })();
   };
 
@@ -59,7 +60,12 @@ export default function JobDetail() {
         </Button>
       </Box>
       <Box component="span" ml={2}>
-        <LoadingButton onClick={handleDelete} variant="contained" color="error" loading={isDeleting}>
+        <LoadingButton
+          onClick={handleDelete}
+          variant="contained"
+          color="error"
+          loading={isDeleting}
+        >
           Delete
         </LoadingButton>
       </Box>
@@ -91,7 +97,19 @@ export default function JobDetail() {
         </Box>
       </Modal>
 
-      <Box component="h1">{jobData?.jobTitle}</Box>
+      {isLoading && (
+        <Box
+          component="div"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          height="300px"
+        >
+          <CircularProgress />
+        </Box>
+      )}
+
+      {!isLoading && <Box component="h1">{jobData?.jobTitle}</Box>}
 
       {jobData?.jobLink && (
         <Box component="a" href={jobData?.jobLink} target="_blank">
