@@ -16,7 +16,9 @@ const ApplicationService = {
     return data;
   },
 
-  addApplication: async (newApplication: Omit<Application, "id">) => {
+  addApplication: async (
+    newApplication: Omit<Application, "id" | "dateCreated">
+  ) => {
     console.log(newApplication);
 
     const { data } = await axios.post(
@@ -37,7 +39,7 @@ const ApplicationService = {
     const { data } = await axios.get(`${baseUrl}/application/lists`);
 
     return data;
-  }
+  },
 };
 
 export default ApplicationService;

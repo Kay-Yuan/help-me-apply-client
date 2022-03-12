@@ -12,7 +12,7 @@ const JobListMemo = memo(JobList);
 
 export default function JobContainer() {
   const [isLoadingTableContent, setIsLoadingTableContent] = useState(true);
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<(Job & { companyName: string })[]>([]);
 
   const [reload, setReload] = useState({});
   const [isOpenAddJobModal, setIsOpenAddJobModal] = useState(false);
@@ -24,7 +24,7 @@ export default function JobContainer() {
     (async () => {
       setIsLoadingTableContent(true);
 
-      const response = await JobService.getJobs(0);
+      const response = await JobService.getJobListWithCompany(0);
       setJobs(response);
       console.log(response);
 

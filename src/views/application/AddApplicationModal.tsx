@@ -145,11 +145,10 @@ export default function ApplicationAddModal({
       setIsLoading(false);
       return;
     }
-    console.log("========= Pass validation ========");
+
     try {
       const response = await applicationService.addApplication(getValues());
 
-      console.log("========= Sent request ========");
       setIsLoading(false);
       onClose();
       reset();

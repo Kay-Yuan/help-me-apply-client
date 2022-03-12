@@ -8,14 +8,14 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useNavigate } from "react-router-dom";
-import styled from 'styled-components'
+import styled from "styled-components";
 
 import ApplicationService from "@services/application";
 import { Application } from "@global/application";
 
 const StyledTableHead = styled(TableCell)`
   font-weight: bold;
-`
+`;
 
 const StyledTableRow = styled(TableRow)`
   &:hover {

@@ -16,6 +16,12 @@ const jobService = {
     return data;
   },
 
+  getJobListWithCompany: async (offset: number) => {
+    const { data } = await axios.get(`${baseUrl}/job/lists?offset=${offset}`);
+
+    return data;
+  },
+
   getJobByTitle: async (jobTitle: string, companyId?: string) => {
     const { data } = companyId
       ? await axios.get(

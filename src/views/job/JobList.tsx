@@ -19,8 +19,9 @@ const StyledTableRow = styled(TableRow)`
     transition: all 0.3s ease;
   }
 `;
+
 interface JobTableProps {
-  JobData: Job[];
+  JobData: (Job & { companyName: string })[];
 }
 
 function BasicTable(props: JobTableProps) {
@@ -33,6 +34,7 @@ function BasicTable(props: JobTableProps) {
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
+              <TableCell>Company</TableCell>
               <TableCell>Job Title</TableCell>
               <TableCell>Job Location</TableCell>
               <TableCell>Job Requirement</TableCell>
@@ -49,6 +51,7 @@ function BasicTable(props: JobTableProps) {
                 hover
                 onClick={() => navigate(`/Job/${Job.id}`)}
               >
+                <TableCell>{Job.companyName}</TableCell>
                 <TableCell component="th" scope="row">
                   {Job.jobTitle}
                 </TableCell>
@@ -79,7 +82,13 @@ function BasicTable(props: JobTableProps) {
   );
 }
 
-function JobList({ isLoading, jobs }: { isLoading: boolean; jobs: Job[] }) {
+function JobList({
+  isLoading,
+  jobs,
+}: {
+  isLoading: boolean;
+  jobs: (Job & { companyName: string })[];
+}) {
   return (
     <>
       {isLoading && (
