@@ -19,7 +19,7 @@ import { send } from "process";
 import companyService from "@services/company";
 import { Company } from "@global/company";
 
-interface CompanyAddModalProps {
+interface AddOrUpdateCompanyModalProps {
   onClose: () => void;
   reload: () => void;
   companyData?: Company;
@@ -78,7 +78,7 @@ export default function CompanyAddModal({
   onClose,
   reload,
   companyData,
-}: CompanyAddModalProps) {
+}: AddOrUpdateCompanyModalProps) {
   const {
     getValues,
     control,
