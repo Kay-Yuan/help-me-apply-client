@@ -4,21 +4,25 @@ import { useParams, useNavigate } from "react-router-dom";
 import companyService from "@services/company";
 import { useSnackbar } from "notistack";
 import { Company } from "@global/company";
+import AddOrUpdateCompanyModal from "./AddOrUpdateCompanyModal";
 
 export default function CompanyDetail() {
-  const [companyData, setCompanyData] = useState<Company>(null);
+  const { enqueueSnackbar } = useSnackbar();
   const { companyId } = useParams();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
+  
+  const [companyData, setCompanyData] = useState<Company>(null);
   const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] =
     useState(false);
+    const [isOpenEditCompanyModal, setIsOpenEditCompanyModal] = useState(false)
+    const [reload, setReload] = useState({});
 
   useEffect(() => {
     (async () => {
       const _companyData = await companyService.getCompany(companyId);
       setCompanyData(_companyData);
     })();
-  }, []);
+  }, [reload]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -27,6 +31,14 @@ export default function CompanyDetail() {
   const handleDelete = () => {
     setIsOpenDeleteConfirmModal(true);
   };
+
+  const handleOpenEditCompanyModal = () => {
+    setIsOpenEditCompanyModal(true);
+  };
+
+  const handleCloseEditCompanyModal = () => {
+    setIsOpenEditCompanyModal(false)
+  }
 
   const handleConfirmDelete = () => {
     (async () => {
@@ -46,6 +58,13 @@ export default function CompanyDetail() {
           Back
         </Button>
       </Box>
+     
+      <Box component="span" ml={2}>
+        <Button onClick={handleOpenEditCompanyModal} variant="contained" >
+          Edit
+        </Button>
+      </Box>
+
       <Box component="span" ml={2}>
         <Button onClick={handleDelete} variant="contained" color="error">
           Delete
@@ -109,6 +128,8 @@ export default function CompanyDetail() {
           Rate: {companyData?.rate}
         </Box>
       )}
+
+      {isOpenEditCompanyModal && <AddOrUpdateCompanyModal companyData={companyData} onClose={handleCloseEditCompanyModal} reload={() => setReload({})}/>}
     </Box>
   );
 }
