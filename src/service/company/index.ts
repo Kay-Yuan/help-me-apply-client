@@ -25,9 +25,16 @@ const companyService = {
   },
 
   addCompany: async (newCompany: Omit<Company, "id">) => {
-    console.log(newCompany);
-
     const { data } = await axios.post(`${baseUrl}/company/create`, newCompany);
+
+    return data;
+  },
+
+  updateCompany: async (company: Company) => {
+    const { data } = await axios.put(
+      `${baseUrl}/company/${company.id}`,
+      company
+    );
 
     return data;
   },

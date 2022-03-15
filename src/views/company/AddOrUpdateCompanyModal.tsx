@@ -17,11 +17,12 @@ import CompanyList from "./CompanyList";
 import { FormControl, Grid, Rating, TextField } from "@mui/material";
 import { send } from "process";
 import companyService from "@services/company";
-import { validateDateTime } from "@mui/lab/internal/pickers/date-time-utils";
+import { Company } from "@global/company";
 
-interface CompanyAddModalProps {
+interface AddOrUpdateCompanyModalProps {
   onClose: () => void;
   reload: () => void;
+  companyData?: Company;
 }
 
 const style = {
@@ -76,7 +77,8 @@ const addCompanyModalSchema = Joi.object().keys({
 export default function CompanyAddModal({
   onClose,
   reload,
-}: CompanyAddModalProps) {
+  companyData,
+}: AddOrUpdateCompanyModalProps) {
   const {
     getValues,
     control,
@@ -86,28 +88,37 @@ export default function CompanyAddModal({
     trigger,
   } = useForm({
     resolver: joiResolver(addCompanyModalSchema),
-    defaultValues: {
-      companyName: undefined,
-      companyURL: undefined,
-      companyAddress: undefined,
-      recruiterName: undefined,
-      recruiterEmail: undefined,
-      recruiterNumber: undefined,
-    },
+    defaultValues: companyData
+      ? {
+          companyName: companyData.companyName,
+          companyURL: companyData.companyURL,
+          companyAddress: companyData.companyAddress,
+          recruiterName: companyData.recruiterName,
+          recruiterEmail: companyData.recruiterEmail,
+          recruiterNumber: companyData.recruiterNumber,
+        }
+      : {
+          companyName: undefined,
+          companyURL: undefined,
+          companyAddress: undefined,
+          recruiterName: undefined,
+          recruiterEmail: undefined,
+          recruiterNumber: undefined,
+        },
     mode: "all",
   });
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [rate, setRate] = useState<number>(0);
+  const [rate, setRate] = useState<number>(companyData?.rate || 0);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleCreate = async () => {
     // first validate all the fields
-    const validationResult = await trigger()
+    const validationResult = await trigger();
 
-    if (!validationResult) return
+    if (!validationResult) return;
 
     setIsLoading(true);
 
@@ -116,20 +127,43 @@ export default function CompanyAddModal({
         ...getValues(),
         rate,
       });
-      
+
       onClose();
       reset();
       enqueueSnackbar("Company added successfully", { variant: "success" });
       reload();
     } catch (error) {
-     enqueueSnackbar(error.message, { variant: "error" }); 
+      enqueueSnackbar(error.message, { variant: "error" });
     } finally {
       setIsLoading(false);
     }
-
-
-
   };
+
+  const handleUpdate = async () => {
+    // first validate all the fields
+    const validationResult = await trigger();
+
+    if (!validationResult) return;
+
+    setIsLoading(true);
+
+    try {
+      const response = await companyService.updateCompany({
+        id: companyData?.id,
+        ...getValues(),
+        rate,
+      });
+
+      onClose();
+      reset();
+      enqueueSnackbar("Company updated successfully", { variant: "success" });
+      reload();
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: "error" });
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <Modal
@@ -288,18 +322,33 @@ export default function CompanyAddModal({
             Cancel
           </Button>
 
-          <LoadingButton
-            onClick={handleCreate}
-            loading={isLoading}
-            variant="contained"
-            color="success"
-            // onClick={handleAddNewCompany}
-            autoFocus
-            style={{ marginLeft: "15px" }}
-            disabled={isLoading}
-          >
-            Add
-          </LoadingButton>
+          {companyData ? (
+            <LoadingButton
+              onClick={handleUpdate}
+              loading={isLoading}
+              variant="contained"
+              color="success"
+              // onClick={handleAddNewCompany}
+              autoFocus
+              style={{ marginLeft: "15px" }}
+              disabled={isLoading}
+            >
+              Update
+            </LoadingButton>
+          ) : (
+            <LoadingButton
+              onClick={handleCreate}
+              loading={isLoading}
+              variant="contained"
+              color="success"
+              // onClick={handleAddNewCompany}
+              autoFocus
+              style={{ marginLeft: "15px" }}
+              disabled={isLoading}
+            >
+              Add
+            </LoadingButton>
+          )}
         </Typography>
 
         {/* <CircularProgress /> */}

@@ -7,7 +7,7 @@ import Modal from "@mui/material/Modal";
 import { useSnackbar } from "notistack";
 
 import CompanyList from "./CompanyList";
-import AddCompanyModal from "./AddCompanyModal";
+import AddOrUpdateCompanyModal from "./AddOrUpdateCompanyModal";
 import companyService from "@services/company";
 import { Company } from "@global/company";
 
@@ -59,7 +59,7 @@ export default function CompanyContainer() {
         />
 
         {isOpenAddCompanyModal && (
-          <AddCompanyModal onClose={handleClose} reload={() => setReload({})} />
+          <AddOrUpdateCompanyModal onClose={handleClose} reload={() => setReload({})} />
         )}
       </Box>
     </div>
