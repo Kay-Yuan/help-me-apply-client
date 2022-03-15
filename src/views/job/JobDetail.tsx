@@ -38,6 +38,8 @@ export default function JobDetail() {
     setIsOpenDeleteConfirmModal(true);
   };
 
+  const handleUpdate = () => {};
+
   const handleConfirmDelete = () => {
     (async () => {
       try {
@@ -62,6 +64,11 @@ export default function JobDetail() {
       <Box component="span">
         <Button onClick={handleGoBack} variant="outlined">
           Back
+        </Button>
+      </Box>
+      <Box component="span" ml={2}>
+        <Button onClick={handleUpdate} variant="contained">
+          Edit
         </Button>
       </Box>
       <Box component="span" ml={2}>
@@ -116,31 +123,31 @@ export default function JobDetail() {
 
       {!isLoading && <Box component="h1">{jobData?.jobTitle}</Box>}
 
-      {jobData?.jobLink && (
+      {!isLoading && jobData?.jobLink && (
         <Box component="a" href={jobData?.jobLink} target="_blank">
           {jobData?.jobLink}
         </Box>
       )}
-      {jobData?.jobLocation && (
+      {!isLoading && jobData?.jobLocation && (
         <Box component="h4">Job Address: {jobData?.jobLocation}</Box>
       )}
-      {jobData?.jobDescription && (
+      {!isLoading && jobData?.jobDescription && (
         <Box component="div" pt={1}>
           Description: {jobData?.jobDescription}
         </Box>
       )}
-      {jobData?.jobRequirement && (
+      {!isLoading && jobData?.jobRequirement && (
         <Box component="div" pt={1}>
           Requirement: {jobData?.jobRequirement}
         </Box>
       )}
-      {jobData?.jobSalaryRange && (
+      {!isLoading && jobData?.jobSalaryRange && (
         <Box component="div" pt={1}>
           Salary: {jobData?.jobSalaryRange}
         </Box>
       )}
 
-      {jobData?.jobStatus && (
+      {!isLoading && jobData?.jobStatus && (
         <Box component="div" pt={1}>
           Status: {jobData?.jobStatus === true ? "Active" : "Inactive"}
         </Box>

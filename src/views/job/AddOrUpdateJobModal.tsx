@@ -26,11 +26,13 @@ import {
 import jobService from "@services/job";
 import companyService from "@services/company";
 import { Company } from "@global/company";
+import { Job } from "@global/job";
 
 interface JobAddModalProps {
   open: boolean;
   onClose: () => void;
   reload: () => void;
+  jobData?: Job;
 }
 
 function debounce(func, timeout = 300) {
@@ -106,7 +108,11 @@ const addJobModalSchema = Joi.object().keys({
     .required(),
 });
 
-export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
+export default function AddOrUpdateJobModal({
+  onClose,
+  reload,
+  jobData,
+}: JobAddModalProps) {
   const [companyOptions, setCompanyOptions] = useState([]);
   const [searchCompanyByName, setSearchCompanyByName] = useState("");
   const [selectedCompany, setSelectedCompany] = useState();
@@ -121,18 +127,31 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
     setValue,
   } = useForm({
     resolver: joiResolver(addJobModalSchema),
-    defaultValues: {
-      companyId: undefined,
-      jobLink: undefined,
-      jobTitle: undefined,
-      jobLocation: undefined,
-      jobDescription: undefined,
-      jobRequirement: undefined,
-      jobExperienceLevel: undefined,
-      jobType: undefined,
-      jobSalaryRange: undefined,
-      jobStatus: undefined,
-    },
+    defaultValues: jobData
+      ? {
+          companyId: jobData.companyId,
+          jobLink: jobData.jobLink,
+          jobTitle: jobData.jobTitle,
+          jobLocation: jobData.jobLocation,
+          jobDescription: jobData.jobDescription,
+          jobRequirement: jobData.jobRequirement,
+          jobExperienceLevel: jobData.jobExperienceLevel,
+          jobType: jobData.jobType,
+          jobSalaryRange: jobData.jobSalaryRange,
+          jobStatus: jobData.jobStatus,
+        }
+      : {
+          companyId: undefined,
+          jobLink: undefined,
+          jobTitle: undefined,
+          jobLocation: undefined,
+          jobDescription: undefined,
+          jobRequirement: undefined,
+          jobExperienceLevel: undefined,
+          jobType: undefined,
+          jobSalaryRange: undefined,
+          jobStatus: undefined,
+        },
     mode: "all",
   });
 

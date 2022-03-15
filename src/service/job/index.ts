@@ -33,9 +33,16 @@ const jobService = {
   },
 
   addJob: async (newJob: Omit<Job, "id" | "companyId">) => {
-    console.log(newJob);
-
     const { data } = await axios.post(`${baseUrl}/job/create`, newJob);
+
+    return data;
+  },
+
+  updateJob: async (updatedJob: Job) => {
+    const { data } = await axios.put(
+      `${baseUrl}/job/${updatedJob.id}`,
+      updatedJob
+    );
 
     return data;
   },

@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
 import JobList from "./JobList";
-import AddJobModal from "./AddJobModal";
+import AddJobModal from "./AddOrUpdateJobModal";
 import JobService from "@services/job";
 import { Job } from "@global/job";
 import { useSnackbar } from "notistack";
