@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Box, Modal } from "@mui/material";
+import { Button, Box, Modal, CircularProgress } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import companyService from "@services/company";
 import { useSnackbar } from "notistack";
@@ -10,21 +10,25 @@ export default function CompanyDetail() {
   const { enqueueSnackbar } = useSnackbar();
   const { companyId } = useParams();
   const navigate = useNavigate();
-  
+
   const [companyData, setCompanyData] = useState<Company>(null);
   const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] =
-    useState(false);
-    const [isOpenEditCompanyModal, setIsOpenEditCompanyModal] = useState(false)
-    const [reload, setReload] = useState({});
+    useState<boolean>(false);
+  const [isOpenEditCompanyModal, setIsOpenEditCompanyModal] =
+    useState<boolean>(false);
+  const [reload, setReload] = useState({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
+      setIsLoading(true);
       try {
         const _companyData = await companyService.getCompany(companyId);
         setCompanyData(_companyData);
       } catch (error) {
         enqueueSnackbar(error.message, { variant: "error" });
       }
+      setIsLoading(false);
     })();
   }, [reload]);
 
@@ -41,8 +45,8 @@ export default function CompanyDetail() {
   };
 
   const handleCloseEditCompanyModal = () => {
-    setIsOpenEditCompanyModal(false)
-  }
+    setIsOpenEditCompanyModal(false);
+  };
 
   const handleConfirmDelete = () => {
     (async () => {
@@ -62,9 +66,9 @@ export default function CompanyDetail() {
           Back
         </Button>
       </Box>
-     
+
       <Box component="span" ml={2}>
-        <Button onClick={handleOpenEditCompanyModal} variant="contained" >
+        <Button onClick={handleOpenEditCompanyModal} variant="contained">
           Edit
         </Button>
       </Box>
@@ -102,6 +106,18 @@ export default function CompanyDetail() {
         </Box>
       </Modal>
 
+      {isLoading && (
+        <Box
+          component="div"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          height="300px"
+        >
+          <CircularProgress />
+        </Box>
+      )}
+
       <Box component="h1">{companyData?.companyName}</Box>
       <Box component="div">
         <Box component="a" href={companyData?.companyURL} target="_blank">
@@ -133,7 +149,13 @@ export default function CompanyDetail() {
         </Box>
       )}
 
-      {isOpenEditCompanyModal && <AddOrUpdateCompanyModal companyData={companyData} onClose={handleCloseEditCompanyModal} reload={() => setReload({})}/>}
+      {isOpenEditCompanyModal && (
+        <AddOrUpdateCompanyModal
+          companyData={companyData}
+          onClose={handleCloseEditCompanyModal}
+          reload={() => setReload({})}
+        />
+      )}
     </Box>
   );
 }
