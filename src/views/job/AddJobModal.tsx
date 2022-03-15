@@ -145,18 +145,21 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
     const fetchCompanyOptions = async () => {
       setIsLoadingCompanyList(true);
 
-      const companies = await companyService.getCompanyByName(
-        searchCompanyByName
-      );
+      try {
+        const companies = await companyService.getCompanyByName(
+          searchCompanyByName
+        );
 
-      const _remapCompanyOptions = companies.length
-        ? companies.map((company: Company) => ({
-            label: company.companyName,
-            id: company.id,
-          }))
-        : [];
-
-      setCompanyOptions(_remapCompanyOptions);
+        const _remapCompanyOptions = companies.length
+          ? companies.map((company: Company) => ({
+              label: company.companyName,
+              id: company.id,
+            }))
+          : [];
+        setCompanyOptions(_remapCompanyOptions);
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: "error" });
+      }
 
       setIsLoadingCompanyList(false);
     };

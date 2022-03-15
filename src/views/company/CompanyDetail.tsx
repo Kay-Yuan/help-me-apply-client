@@ -15,8 +15,12 @@ export default function CompanyDetail() {
 
   useEffect(() => {
     (async () => {
-      const _companyData = await companyService.getCompany(companyId);
-      setCompanyData(_companyData);
+      try {
+        const _companyData = await companyService.getCompany(companyId);
+        setCompanyData(_companyData);
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: "error" });
+      }
     })();
   }, []);
 

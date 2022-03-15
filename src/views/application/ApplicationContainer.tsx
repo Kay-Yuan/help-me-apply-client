@@ -7,6 +7,7 @@ import ApplicationList from "./ApplicationList";
 import AddApplicationModal from "./AddApplicationModal";
 import ApplicationService from "@services/application";
 import { Application } from "@global/application";
+import { useSnackbar } from "notistack";
 
 interface ApplicationWithCompanyJobTitle extends Application {
   companyName: string;
@@ -17,11 +18,15 @@ const ApplicationListMemo = memo(ApplicationList);
 
 export default function ApplicationContainer() {
   const [isLoadingTableContent, setIsLoadingTableContent] = useState(true);
-  const [applications, setApplications] = useState<ApplicationWithCompanyJobTitle[]>([]);
+  const [applications, setApplications] = useState<
+    ApplicationWithCompanyJobTitle[]
+  >([]);
 
   const [reload, setReload] = useState({});
   const [isOpenAddApplicationModal, setIsOpenAddApplicationModal] =
     useState(false);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleOpen = () => setIsOpenAddApplicationModal(true);
   const handleClose = () => setIsOpenAddApplicationModal(false);
@@ -30,8 +35,13 @@ export default function ApplicationContainer() {
     (async () => {
       setIsLoadingTableContent(true);
 
-      const response = await ApplicationService.applicationListsWithCompanyNameJobTitle();
-      setApplications(response);
+      try {
+        const response =
+          await ApplicationService.applicationListsWithCompanyNameJobTitle();
+        setApplications(response);
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: "error" });
+      }
 
       setIsLoadingTableContent(false);
     })();

@@ -17,10 +17,16 @@ export default function ApplicationDetail() {
   useEffect(() => {
     (async () => {
       setIsLoading(true);
-      const _applicationData = await applicationService.getApplication(
-        applicationId
-      );
-      setApplicationData(_applicationData);
+
+      try {
+        const _applicationData = await applicationService.getApplication(
+          applicationId
+        );
+        setApplicationData(_applicationData);
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: "error" });
+      }
+
       setIsLoading(false);
     })();
   }, []);

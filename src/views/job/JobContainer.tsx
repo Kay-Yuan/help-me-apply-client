@@ -7,6 +7,7 @@ import JobList from "./JobList";
 import AddJobModal from "./AddJobModal";
 import JobService from "@services/job";
 import { Job } from "@global/job";
+import { useSnackbar } from "notistack";
 
 const JobListMemo = memo(JobList);
 
@@ -17,6 +18,8 @@ export default function JobContainer() {
   const [reload, setReload] = useState({});
   const [isOpenAddJobModal, setIsOpenAddJobModal] = useState(false);
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const handleOpen = () => setIsOpenAddJobModal(true);
   const handleClose = () => setIsOpenAddJobModal(false);
 
@@ -24,9 +27,12 @@ export default function JobContainer() {
     (async () => {
       setIsLoadingTableContent(true);
 
-      const response = await JobService.getJobListWithCompany(0);
-      setJobs(response);
-      console.log(response);
+      try {
+        const response = await JobService.getJobListWithCompany(0);
+        setJobs(response);
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: "error" });
+      }
 
       setIsLoadingTableContent(false);
     })();

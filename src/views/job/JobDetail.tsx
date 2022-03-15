@@ -19,8 +19,13 @@ export default function JobDetail() {
   useEffect(() => {
     (async () => {
       setIsLoading(true);
-      const _jobData = await jobService.getJob(jobId);
-      setJobData(_jobData);
+
+      try {
+        const _jobData = await jobService.getJob(jobId);
+        setJobData(_jobData);
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: "error" });
+      }
       setIsLoading(false);
     })();
   }, []);
