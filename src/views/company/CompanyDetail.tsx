@@ -118,32 +118,36 @@ export default function CompanyDetail() {
         </Box>
       )}
 
-      <Box component="h1">{companyData?.companyName}</Box>
-      <Box component="div">
-        <Box component="a" href={companyData?.companyURL} target="_blank">
-          {companyData?.companyURL}
+      {!isLoading && companyData?.companyName && (
+        <Box component="h1">{companyData?.companyName}</Box>
+      )}
+      {!isLoading && companyData?.companyURL && (
+        <Box component="div">
+          <Box component="a" href={companyData?.companyURL} target="_blank">
+            {companyData?.companyURL}
+          </Box>
         </Box>
-      </Box>
-      {companyData?.companyAddress && (
+      )}
+      {!isLoading && companyData?.companyAddress && (
         <Box component="h4">Company Address: {companyData?.companyAddress}</Box>
       )}
-      {companyData?.recruiterName && (
+      {!isLoading && companyData?.recruiterName && (
         <Box component="div" pt={1}>
           Recruiter Name: {companyData?.recruiterName}
         </Box>
       )}
-      {companyData?.recruiterEmail && (
+      {!isLoading && companyData?.recruiterEmail && (
         <Box component="div" pt={1}>
           Recruiter Email: {companyData?.recruiterEmail}
         </Box>
       )}
-      {companyData?.recruiterNumber && (
+      {!isLoading && companyData?.recruiterNumber && (
         <Box component="div" pt={1}>
           recruiterNumber: {companyData?.recruiterNumber}
         </Box>
       )}
 
-      {(companyData?.rate === 0 || companyData?.rate) && (
+      {!isLoading && (companyData?.rate === 0 || companyData?.rate) && (
         <Box component="div" pt={1}>
           Rate: {companyData?.rate}
         </Box>
