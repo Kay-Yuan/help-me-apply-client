@@ -118,39 +118,45 @@ export default function CompanyDetail() {
         </Box>
       )}
 
-      {!isLoading && companyData?.companyName && (
-        <Box component="h1">{companyData?.companyName}</Box>
-      )}
-      {!isLoading && companyData?.companyURL && (
-        <Box component="div">
-          <Box component="a" href={companyData?.companyURL} target="_blank">
-            {companyData?.companyURL}
-          </Box>
-        </Box>
-      )}
-      {!isLoading && companyData?.companyAddress && (
-        <Box component="h4">Company Address: {companyData?.companyAddress}</Box>
-      )}
-      {!isLoading && companyData?.recruiterName && (
-        <Box component="div" pt={1}>
-          Recruiter Name: {companyData?.recruiterName}
-        </Box>
-      )}
-      {!isLoading && companyData?.recruiterEmail && (
-        <Box component="div" pt={1}>
-          Recruiter Email: {companyData?.recruiterEmail}
-        </Box>
-      )}
-      {!isLoading && companyData?.recruiterNumber && (
-        <Box component="div" pt={1}>
-          recruiterNumber: {companyData?.recruiterNumber}
-        </Box>
-      )}
+      {!isLoading && (
+        <>
+          {companyData?.companyName && (
+            <Box component="h1">{companyData?.companyName}</Box>
+          )}
+          {companyData?.companyURL && (
+            <Box component="div">
+              <Box component="a" href={companyData?.companyURL} target="_blank">
+                {companyData?.companyURL}
+              </Box>
+            </Box>
+          )}
+          {companyData?.companyAddress && (
+            <Box component="h4">
+              Company Address: {companyData?.companyAddress}
+            </Box>
+          )}
+          {companyData?.recruiterName && (
+            <Box component="div" pt={1}>
+              Recruiter Name: {companyData?.recruiterName}
+            </Box>
+          )}
+          {companyData?.recruiterEmail && (
+            <Box component="div" pt={1}>
+              Recruiter Email: {companyData?.recruiterEmail}
+            </Box>
+          )}
+          {companyData?.recruiterNumber && (
+            <Box component="div" pt={1}>
+              recruiterNumber: {companyData?.recruiterNumber}
+            </Box>
+          )}
 
-      {!isLoading && (companyData?.rate === 0 || companyData?.rate) && (
-        <Box component="div" pt={1}>
-          Rate: {companyData?.rate}
-        </Box>
+          {(companyData?.rate === 0 || companyData?.rate) && (
+            <Box component="div" pt={1}>
+              Rate: {companyData?.rate}
+            </Box>
+          )}
+        </>
       )}
 
       {isOpenEditCompanyModal && (
