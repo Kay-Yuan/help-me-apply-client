@@ -104,19 +104,21 @@ export default function ApplicationDetail() {
         </Box>
       )}
 
-      {!isLoading && <Box component="h1">{applicationData?.dateCreated}</Box>}
+      {!isLoading && applicationData?.dateCreated && (
+        <Box component="h1">{applicationData?.dateCreated}</Box>
+      )}
 
-      {applicationData?.applicationStatus && (
+      {!isLoading && applicationData?.applicationStatus && (
         <Box component="h4">
           Application Status: {applicationData?.applicationStatus}
         </Box>
       )}
-      {applicationData?.dateCreated && (
+      {!isLoading && applicationData?.dateCreated && (
         <Box component="div" pt={1}>
           Description: {applicationData?.dateCreated}
         </Box>
       )}
-      {applicationData?.expectedSalary && (
+      {!isLoading && applicationData?.expectedSalary && (
         <Box component="div" pt={1}>
           Requirement: {applicationData?.expectedSalary}
         </Box>

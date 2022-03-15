@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import jobService from "@services/job";
 import { useSnackbar } from "notistack";
 import { Job } from "@global/job";
+import AddOrUpdateJobModal from "./AddOrUpdateJobModal";
 
 export default function JobDetail() {
   const [jobData, setJobData] = useState<Job>(null);
@@ -15,6 +16,8 @@ export default function JobDetail() {
   const { enqueueSnackbar } = useSnackbar();
   const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] =
     useState(false);
+  const [isOpenEditJobModal, setIsOpenEditJobModal] = useState(false);
+  const [reload, setReload] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -28,7 +31,7 @@ export default function JobDetail() {
       }
       setIsLoading(false);
     })();
-  }, []);
+  }, [reload]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -38,7 +41,13 @@ export default function JobDetail() {
     setIsOpenDeleteConfirmModal(true);
   };
 
-  const handleUpdate = () => {};
+  const handleOpenEditJobModal = () => {
+    setIsOpenEditJobModal(true);
+  };
+
+  const handleCloseEditJobModal = () => {
+    setIsOpenEditJobModal(false);
+  };
 
   const handleConfirmDelete = () => {
     (async () => {
@@ -67,7 +76,7 @@ export default function JobDetail() {
         </Button>
       </Box>
       <Box component="span" ml={2}>
-        <Button onClick={handleUpdate} variant="contained">
+        <Button onClick={handleOpenEditJobModal} variant="contained">
           Edit
         </Button>
       </Box>
@@ -151,6 +160,14 @@ export default function JobDetail() {
         <Box component="div" pt={1}>
           Status: {jobData?.jobStatus === true ? "Active" : "Inactive"}
         </Box>
+      )}
+
+      {isOpenEditJobModal && (
+        <AddOrUpdateJobModal
+          jobData={jobData}
+          onClose={handleCloseEditJobModal}
+          reload={() => setReload({})}
+        />
       )}
     </Box>
   );
