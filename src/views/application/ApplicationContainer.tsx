@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
 import ApplicationList from "./ApplicationList";
-import AddApplicationModal from "./AddApplicationModal";
+import AddOrUpdateApplicationModal from "./AddOrUpdateApplicationModal";
 import ApplicationService from "@services/application";
 import { Application } from "@global/application";
 import { useSnackbar } from "notistack";
@@ -62,8 +62,7 @@ export default function ApplicationContainer() {
           applications={applications}
         />
         {isOpenAddApplicationModal && (
-          <AddApplicationModal
-            open={true}
+          <AddOrUpdateApplicationModal
             onClose={handleClose}
             reload={() => setReload({})}
           />

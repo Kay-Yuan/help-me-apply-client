@@ -29,11 +29,12 @@ import applicationService from "@services/application";
 import { minWidth } from "@mui/lab/node_modules/@mui/system";
 import companyService from "@services/company";
 import publicService from "@services/public";
+import { Application } from "@global/application";
 
-interface ApplicationAddModalProps {
-  open: boolean;
+interface AddOrUpdateApplicationModalProps {
   onClose: () => void;
   reload: () => void;
+  applicationData?: Application;
 }
 
 const style = {
@@ -67,7 +68,8 @@ const addApplicationModalSchema = Joi.object().keys({
 export default function ApplicationAddModal({
   onClose,
   reload,
-}: ApplicationAddModalProps) {
+  applicationData,
+}: AddOrUpdateApplicationModalProps) {
   const {
     getValues,
     control,
@@ -78,11 +80,17 @@ export default function ApplicationAddModal({
     trigger,
   } = useForm({
     resolver: joiResolver(addApplicationModalSchema),
-    defaultValues: {
-      jobId: undefined,
-      applicationStatus: undefined,
-      expectedSalary: undefined,
-    },
+    defaultValues: applicationData
+      ? {
+          jobId: applicationData.jobId,
+          applicationStatus: applicationData.applicationStatus,
+          expectedSalary: applicationData.expectedSalary,
+        }
+      : {
+          jobId: undefined,
+          applicationStatus: undefined,
+          expectedSalary: undefined,
+        },
     mode: "all",
   });
 
@@ -155,6 +163,31 @@ export default function ApplicationAddModal({
       enqueueSnackbar("Application added successfully", { variant: "success" });
       reload();
     } catch (error) {}
+  };
+
+  const handleUpdate = async () => {
+    // first validate all the fields
+    const validationResult = await trigger();
+
+    if (!validationResult) return;
+
+    setIsLoading(true);
+
+    try {
+      const response = await applicationService.updateApplication({
+        id: applicationData?.id,
+        ...getValues(),
+      });
+
+      onClose();
+      reset();
+      enqueueSnackbar("Company updated successfully", { variant: "success" });
+      reload();
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: "error" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCompanyInputChange = (_, newInputValue) => {
@@ -281,7 +314,7 @@ export default function ApplicationAddModal({
                       field.onBlur();
                     }}
                     {...register("expectedSalary")}
-                    label="Expected Salary"
+                    label="Expected Salary(AUD)"
                     variant="standard"
                     fullWidth
                     error={!!errors.expectedSalary}
@@ -300,17 +333,31 @@ export default function ApplicationAddModal({
             Cancel
           </Button>
 
-          <LoadingButton
-            onClick={handleCreate}
-            loading={isLoading}
-            variant="contained"
-            color="success"
-            autoFocus
-            style={{ marginLeft: "15px" }}
-            disabled={isLoading}
-          >
-            Add
-          </LoadingButton>
+          {applicationData ? (
+            <LoadingButton
+              onClick={handleUpdate}
+              loading={isLoading}
+              variant="contained"
+              color="success"
+              autoFocus
+              style={{ marginLeft: "15px" }}
+              disabled={isLoading}
+            >
+              Update
+            </LoadingButton>
+          ) : (
+            <LoadingButton
+              onClick={handleCreate}
+              loading={isLoading}
+              variant="contained"
+              color="success"
+              autoFocus
+              style={{ marginLeft: "15px" }}
+              disabled={isLoading}
+            >
+              Add
+            </LoadingButton>
+          )}
         </Typography>
 
         {/* <CircularProgress /> */}

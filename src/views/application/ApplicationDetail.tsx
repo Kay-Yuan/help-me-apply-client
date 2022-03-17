@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import applicationService from "@services/application";
 import { useSnackbar } from "notistack";
 import { Application } from "@global/application";
+import AddOrUpdateApplicationModal from "./AddOrUpdateApplicationModal";
 
 export default function ApplicationDetail() {
   const [applicationData, setApplicationData] = useState<Application>(null);
@@ -13,6 +14,9 @@ export default function ApplicationDetail() {
   const { enqueueSnackbar } = useSnackbar();
   const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] =
     useState(false);
+  const [isOpenEditApplicationModal, setIsOpenEditApplicationModal] =
+    useState<boolean>(false);
+  const [reload, setReload] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -29,7 +33,7 @@ export default function ApplicationDetail() {
 
       setIsLoading(false);
     })();
-  }, []);
+  }, [reload]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -37,6 +41,14 @@ export default function ApplicationDetail() {
 
   const handleDelete = () => {
     setIsOpenDeleteConfirmModal(true);
+  };
+
+  const handleOpenEditApplicationModal = () => {
+    setIsOpenEditApplicationModal(true);
+  };
+
+  const handleCloseEditApplicationModal = () => {
+    setIsOpenEditApplicationModal(false);
   };
 
   const handleConfirmDelete = () => {
@@ -57,6 +69,11 @@ export default function ApplicationDetail() {
       <Box component="span">
         <Button onClick={handleGoBack} variant="outlined">
           Back
+        </Button>
+      </Box>
+      <Box component="span" ml={2}>
+        <Button onClick={handleOpenEditApplicationModal} variant="contained">
+          Edit
         </Button>
       </Box>
       <Box component="span" ml={2}>
@@ -104,22 +121,33 @@ export default function ApplicationDetail() {
         </Box>
       )}
 
-      {!isLoading && <Box component="h1">{applicationData?.dateCreated}</Box>}
+      {!isLoading && (
+        <>
+          <Box component="h1">
+            Create/Last Modified Time:{" "}
+            {new Date(applicationData?.dateCreated).toLocaleString()}
+          </Box>
 
-      {applicationData?.applicationStatus && (
-        <Box component="h4">
-          Application Status: {applicationData?.applicationStatus}
-        </Box>
-      )}
-      {applicationData?.dateCreated && (
-        <Box component="div" pt={1}>
-          Description: {applicationData?.dateCreated}
-        </Box>
-      )}
-      {applicationData?.expectedSalary && (
-        <Box component="div" pt={1}>
-          Requirement: {applicationData?.expectedSalary}
-        </Box>
+          {applicationData?.applicationStatus && (
+            <Box component="h4">
+              Application Status: {applicationData?.applicationStatus}
+            </Box>
+          )}
+
+          {applicationData?.expectedSalary && (
+            <Box component="h4">
+              Expected Salary(AUD): {applicationData?.expectedSalary}
+            </Box>
+          )}
+
+          {isOpenEditApplicationModal && (
+            <AddOrUpdateApplicationModal
+              applicationData={applicationData}
+              onClose={handleCloseEditApplicationModal}
+              reload={() => setReload({})}
+            />
+          )}
+        </>
       )}
     </Box>
   );

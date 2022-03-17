@@ -19,10 +19,19 @@ const ApplicationService = {
   addApplication: async (
     newApplication: Omit<Application, "id" | "dateCreated">
   ) => {
-    console.log(newApplication);
-
     const { data } = await axios.post(
       `${baseUrl}/application/create`,
+      newApplication
+    );
+
+    return data;
+  },
+
+  updateApplication: async (
+    newApplication: Omit<Application, "dateCreated">
+  ) => {
+    const { data } = await axios.put(
+      `${baseUrl}/application/${newApplication.id}`,
       newApplication
     );
 
