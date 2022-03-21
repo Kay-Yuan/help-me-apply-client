@@ -26,11 +26,13 @@ import {
 import jobService from "@services/job";
 import companyService from "@services/company";
 import { Company } from "@global/company";
+import { Job } from "@global/job";
 
 interface JobAddModalProps {
-  open: boolean;
+  // open: boolean;
   onClose: () => void;
   reload: () => void;
+  jobData?: Job;
 }
 
 function debounce(func, timeout = 300) {
@@ -106,7 +108,11 @@ const addJobModalSchema = Joi.object().keys({
     .required(),
 });
 
-export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
+export default function AddOrUpdateJobModal({
+  onClose,
+  reload,
+  jobData,
+}: JobAddModalProps) {
   const [companyOptions, setCompanyOptions] = useState([]);
   const [searchCompanyByName, setSearchCompanyByName] = useState("");
   const [selectedCompany, setSelectedCompany] = useState();
@@ -121,18 +127,31 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
     setValue,
   } = useForm({
     resolver: joiResolver(addJobModalSchema),
-    defaultValues: {
-      companyId: undefined,
-      jobLink: undefined,
-      jobTitle: undefined,
-      jobLocation: undefined,
-      jobDescription: undefined,
-      jobRequirement: undefined,
-      jobExperienceLevel: undefined,
-      jobType: undefined,
-      jobSalaryRange: undefined,
-      jobStatus: undefined,
-    },
+    defaultValues: jobData
+      ? {
+          companyId: jobData.companyId,
+          jobLink: jobData.jobLink ?? "",
+          jobTitle: jobData.jobTitle ?? "",
+          jobLocation: jobData.jobLocation ?? "",
+          jobDescription: jobData.jobDescription ?? "",
+          jobRequirement: jobData.jobRequirement ?? "",
+          jobExperienceLevel: jobData.jobExperienceLevel ?? "",
+          jobType: jobData.jobType ?? "",
+          jobSalaryRange: jobData.jobSalaryRange ?? "",
+          jobStatus: jobData.jobStatus === true ? "active" : "inactive",
+        }
+      : {
+          companyId: undefined,
+          jobLink: undefined,
+          jobTitle: undefined,
+          jobLocation: undefined,
+          jobDescription: undefined,
+          jobRequirement: undefined,
+          jobExperienceLevel: undefined,
+          jobType: undefined,
+          jobSalaryRange: undefined,
+          jobStatus: undefined,
+        },
     mode: "all",
   });
 
@@ -174,7 +193,10 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
 
     setIsLoading(true);
 
-    const response = await jobService.addJob(getValues());
+    const response = await jobService.addJob({
+      ...getValues(),
+      jobStatus: getValues().jobStatus === "active" ? true : false,
+    });
 
     setIsLoading(false);
 
@@ -182,6 +204,32 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
     reset();
     enqueueSnackbar("Job added successfully", { variant: "success" });
     reload();
+  };
+
+  const handleUpdate = async () => {
+    // first validate all the fields
+    const validationResult = await trigger();
+
+    if (!validationResult) return;
+
+    setIsLoading(true);
+
+    try {
+      const response = await jobService.updateJob({
+        id: jobData?.id,
+        ...getValues(),
+        jobStatus: getValues().jobStatus === "active" ? true : false,
+      });
+
+      onClose();
+      reset();
+      enqueueSnackbar("Company updated successfully", { variant: "success" });
+      reload();
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: "error" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (_, newInputValue) => {
@@ -388,17 +436,24 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
                 name="jobStatus"
                 control={control}
                 render={({ field }) => (
-                  <TextField
-                    onBlur={field.onBlur}
-                    {...register("jobStatus")}
-                    label="Job Status"
-                    variant="standard"
-                    fullWidth
-                    required
-                    error={!!errors.jobStatus}
-                    helperText={errors.jobStatus?.message}
-                    {...field}
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel id="jobStatus">Job Status</InputLabel>
+                    <Select
+                      onBlur={field.onBlur}
+                      {...register("jobStatus")}
+                      labelId="jobStatus"
+                      //   label="Job Status"
+                      variant="standard"
+                      fullWidth
+                      error={!!errors.jobStatus}
+                      // helperText={errors.jobStatus?.message}
+                      {...field}
+                    >
+                      <MenuItem value={""}>None</MenuItem>
+                      <MenuItem value={"active"}>Active</MenuItem>
+                      <MenuItem value={"inactive"}>Inactive</MenuItem>
+                    </Select>
+                  </FormControl>
                 )}
               />
             </Grid>
@@ -434,17 +489,31 @@ export default function JobAddModal({ onClose, reload }: JobAddModalProps) {
             Cancel
           </Button>
 
-          <LoadingButton
-            onClick={handleCreate}
-            loading={isLoading}
-            variant="contained"
-            color="success"
-            autoFocus
-            style={{ marginLeft: "15px" }}
-            disabled={isLoading}
-          >
-            Add
-          </LoadingButton>
+          {jobData ? (
+            <LoadingButton
+              onClick={handleUpdate}
+              loading={isLoading}
+              variant="contained"
+              color="success"
+              autoFocus
+              style={{ marginLeft: "15px" }}
+              disabled={isLoading}
+            >
+              Update
+            </LoadingButton>
+          ) : (
+            <LoadingButton
+              onClick={handleCreate}
+              loading={isLoading}
+              variant="contained"
+              color="success"
+              autoFocus
+              style={{ marginLeft: "15px" }}
+              disabled={isLoading}
+            >
+              Add
+            </LoadingButton>
+          )}
         </Typography>
 
         {/* <CircularProgress /> */}

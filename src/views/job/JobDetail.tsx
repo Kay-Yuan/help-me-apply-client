@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import jobService from "@services/job";
 import { useSnackbar } from "notistack";
 import { Job } from "@global/job";
+import AddOrUpdateJobModal from "./AddOrUpdateJobModal";
 
 export default function JobDetail() {
   const [jobData, setJobData] = useState<Job>(null);
@@ -15,6 +16,8 @@ export default function JobDetail() {
   const { enqueueSnackbar } = useSnackbar();
   const [isOpenDeleteConfirmModal, setIsOpenDeleteConfirmModal] =
     useState(false);
+  const [isOpenEditJobModal, setIsOpenEditJobModal] = useState(false);
+  const [reload, setReload] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -28,7 +31,7 @@ export default function JobDetail() {
       }
       setIsLoading(false);
     })();
-  }, []);
+  }, [reload]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -36,6 +39,14 @@ export default function JobDetail() {
 
   const handleDelete = () => {
     setIsOpenDeleteConfirmModal(true);
+  };
+
+  const handleOpenEditJobModal = () => {
+    setIsOpenEditJobModal(true);
+  };
+
+  const handleCloseEditJobModal = () => {
+    setIsOpenEditJobModal(false);
   };
 
   const handleConfirmDelete = () => {
@@ -62,6 +73,11 @@ export default function JobDetail() {
       <Box component="span">
         <Button onClick={handleGoBack} variant="outlined">
           Back
+        </Button>
+      </Box>
+      <Box component="span" ml={2}>
+        <Button onClick={handleOpenEditJobModal} variant="contained">
+          Edit
         </Button>
       </Box>
       <Box component="span" ml={2}>
@@ -116,34 +132,42 @@ export default function JobDetail() {
 
       {!isLoading && <Box component="h1">{jobData?.jobTitle}</Box>}
 
-      {jobData?.jobLink && (
+      {!isLoading && jobData?.jobLink && (
         <Box component="a" href={jobData?.jobLink} target="_blank">
           {jobData?.jobLink}
         </Box>
       )}
-      {jobData?.jobLocation && (
+      {!isLoading && jobData?.jobLocation && (
         <Box component="h4">Job Address: {jobData?.jobLocation}</Box>
       )}
-      {jobData?.jobDescription && (
+      {!isLoading && jobData?.jobDescription && (
         <Box component="div" pt={1}>
           Description: {jobData?.jobDescription}
         </Box>
       )}
-      {jobData?.jobRequirement && (
+      {!isLoading && jobData?.jobRequirement && (
         <Box component="div" pt={1}>
           Requirement: {jobData?.jobRequirement}
         </Box>
       )}
-      {jobData?.jobSalaryRange && (
+      {!isLoading && jobData?.jobSalaryRange && (
         <Box component="div" pt={1}>
           Salary: {jobData?.jobSalaryRange}
         </Box>
       )}
 
-      {jobData?.jobStatus && (
+      {!isLoading && jobData?.jobStatus && (
         <Box component="div" pt={1}>
           Status: {jobData?.jobStatus === true ? "Active" : "Inactive"}
         </Box>
+      )}
+
+      {isOpenEditJobModal && (
+        <AddOrUpdateJobModal
+          jobData={jobData}
+          onClose={handleCloseEditJobModal}
+          reload={() => setReload({})}
+        />
       )}
     </Box>
   );
