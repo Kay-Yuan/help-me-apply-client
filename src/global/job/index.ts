@@ -6,7 +6,7 @@ export interface Job {
   jobDescription?: string;
   jobRequirement?: string;
   jobExperienceLevel?: string;
-  jobType?: number;
+  jobType?: string;
   jobSalaryRange?: string;
   jobStatus?: boolean;
   companyId: string;
