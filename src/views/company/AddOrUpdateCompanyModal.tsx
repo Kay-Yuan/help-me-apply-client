@@ -345,6 +345,7 @@ export default function CompanyAddModal({
               autoFocus
               style={{ marginLeft: "15px" }}
               disabled={isLoading}
+	      data-cy='button-add'
             >
               Add
             </LoadingButton>
