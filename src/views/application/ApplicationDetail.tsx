@@ -1,14 +1,30 @@
-import { useEffect, useState } from "react";
-import { Button, Box, Modal, CircularProgress } from "@mui/material";
+import { memo, useEffect, useState } from "react";
+import {
+  Button,
+  Box,
+  Modal,
+  CircularProgress,
+  TextareaAutosize,
+  TextField,
+} from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import applicationService from "@services/application";
 import { useSnackbar } from "notistack";
 import { Application } from "@global/application";
+import { CommentType } from "@global/comment";
 import AddOrUpdateApplicationModal from "./AddOrUpdateApplicationModal";
+import commentService from "@services/comment";
+import { LoadingButton } from "@mui/lab";
+import { CommentList } from "@views/comment";
+
+const CommentListMemo = memo(CommentList);
 
 export default function ApplicationDetail() {
   const [applicationData, setApplicationData] = useState<Application>(null);
+  const [commentData, setCommentData] = useState<Comment[]>([]);
+  const [commentBuffer, setCommentBuffer] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isCommentLoading, setIsCommentLoading] = useState<boolean>(false);
   const { applicationId } = useParams();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -17,6 +33,7 @@ export default function ApplicationDetail() {
   const [isOpenEditApplicationModal, setIsOpenEditApplicationModal] =
     useState<boolean>(false);
   const [reload, setReload] = useState({});
+  const [reloadComment, setReloadComment] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -35,6 +52,23 @@ export default function ApplicationDetail() {
     })();
   }, [reload]);
 
+  useEffect(() => {
+    (async () => {
+      setIsCommentLoading(true);
+
+      try {
+        const _comment = await commentService.getCommentsWithAppId(
+          applicationId
+        );
+        console.log(_comment);
+        setCommentData(_comment);
+      } catch (error) {
+        enqueueSnackbar(error.message, { variant: "error" });
+      }
+      setIsCommentLoading(false);
+    })();
+  }, [reloadComment]);
+
   const handleGoBack = () => {
     navigate(-1);
   };
@@ -49,6 +83,25 @@ export default function ApplicationDetail() {
 
   const handleCloseEditApplicationModal = () => {
     setIsOpenEditApplicationModal(false);
+  };
+
+  const handleAddComment = async () => {
+    try {
+      setIsCommentLoading(true);
+
+      const response = await commentService.addComment({
+        content: commentBuffer,
+        applicationId,
+      });
+
+      setCommentBuffer("");
+      enqueueSnackbar("Comment added successfully", { variant: "success" });
+      setReloadComment({});
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: "error" });
+    } finally {
+      setIsCommentLoading(false);
+    }
   };
 
   const handleConfirmDelete = () => {
@@ -124,7 +177,7 @@ export default function ApplicationDetail() {
       {!isLoading && (
         <>
           <Box component="h1">
-            Create/Last Modified Time:{" "}
+            Create/Last Modified Time:
             {new Date(applicationData?.dateCreated).toLocaleString()}
           </Box>
 
@@ -140,6 +193,47 @@ export default function ApplicationDetail() {
             </Box>
           )}
 
+          <TextField
+            style={{ background: "white", width: 1000 }}
+            label="New Comment"
+            multiline
+            rows={7}
+            placeholder="Type comment here..."
+            value={commentBuffer}
+            onChange={(e) => setCommentBuffer(e.target.value)}
+          />
+
+          <Box component="div" mt={2}>
+            <LoadingButton
+              loading={isCommentLoading}
+              onClick={handleAddComment}
+              variant="contained"
+            >
+              Add Comment
+            </LoadingButton>
+          </Box>
+
+          <h2 style={{ marginTop: 75 }}>Comment:</h2>
+
+          {isCommentLoading && (
+            <Box
+              component="div"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              height="300px"
+            >
+              <CircularProgress />
+            </Box>
+          )}
+
+          {!isCommentLoading && (
+            <CommentListMemo
+              commentData={commentData}
+              reload={() => setReloadComment({})}
+            />
+          )}
+
           {isOpenEditApplicationModal && (
             <AddOrUpdateApplicationModal
               applicationData={applicationData}
@@ -148,7 +242,6 @@ export default function ApplicationDetail() {
             />
           )}
         </>
-
       )}
     </Box>
   );
