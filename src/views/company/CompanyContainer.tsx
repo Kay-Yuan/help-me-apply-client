@@ -35,7 +35,7 @@ export default function CompanyContainer() {
         setCompanies(response);
 
       } catch (error) {
-        enqueueSnackbar(error.message, { variant: "error" });    
+        enqueueSnackbar(error.message, { variant: "error" });
       } finally {
         setIsLoadingTableContent(false);
       }
@@ -49,6 +49,7 @@ export default function CompanyContainer() {
           variant="outlined"
           onClick={handleOpen}
           style={{ marginBottom: "10px" }}
+	  data-cy='button-add-company'
         >
           Add Company
         </Button>
